@@ -3,6 +3,30 @@
 #include "ofMain.h"
 #include "ofxOpenCv.h"
 
+class BeamCamera
+{
+public:
+    BeamCamera();
+    ~BeamCamera();
+
+    void update();
+    void learn_background();
+    void start_learning_beam(int beam);
+    void stop_learning_beam();
+
+private:
+    ofVideoGrabber grabber;
+    ofxCvColorImage colorImg;
+    ofxCvGrayscaleImage grayImg;
+    ofxCvGrayscaleImage grayBg;
+    ofxCvGrayscaleImage grayWorking;
+
+    ofxCvContourFinder contourFinder;
+
+    std::vector<ofxCvGrayscaleImage> beam_masks;
+};
+
+
 class ofApp : public ofBaseApp{
 	public:
 		void setup();
@@ -21,7 +45,8 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo) {};
 		void gotMessage(ofMessage msg) {};
 
-        ofVideoGrabber vidGrabber;
+        ofVideoGrabber cam_left;
+        ofVideoGrabber cam_right;
 
         ofxCvColorImage			colorImg;
         ofxCvGrayscaleImage 	grayImage;

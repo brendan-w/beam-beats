@@ -3,19 +3,22 @@
 
 #define WIDTH 320
 #define HEIGHT 240
+#define FRAMERATE 60
+
 
 //--------------------------------------------------------------
-void ofApp::setup(){
+void ofApp::setup()
+{
     // Set the video grabber to the ofxPS3EyeGrabber.
-    vidGrabber.setGrabber(std::make_shared<ofxPS3EyeGrabber>());
+    cam_left.setGrabber(std::make_shared<ofxPS3EyeGrabber>());
 
-    vidGrabber.setPixelFormat(OF_PIXELS_RGB);
-    vidGrabber.setDesiredFrameRate(60);
-    vidGrabber.setup(WIDTH, HEIGHT);
+    cam_left.setPixelFormat(OF_PIXELS_RGB);
+    cam_left.setDesiredFrameRate(60);
+    cam_left.setup(WIDTH, HEIGHT);
 
     //PS3 Eye specific settings
-    vidGrabber.getGrabber<ofxPS3EyeGrabber>()->setAutogain(false);
-    vidGrabber.getGrabber<ofxPS3EyeGrabber>()->setAutoWhiteBalance(false);
+    cam_left.getGrabber<ofxPS3EyeGrabber>()->setAutogain(false);
+    cam_left.getGrabber<ofxPS3EyeGrabber>()->setAutoWhiteBalance(false);
 
     colorImg.allocate(WIDTH, HEIGHT);
     grayImage.allocate(WIDTH, HEIGHT);
@@ -27,12 +30,13 @@ void ofApp::setup(){
 }
 
 //--------------------------------------------------------------
-void ofApp::update(){
-    vidGrabber.update();
+void ofApp::update()
+{
+    cam_left.update();
 
-    if(vidGrabber.isFrameNew())
+    if(cam_left.isFrameNew())
     {
-        colorImg.setFromPixels(vidGrabber.getPixels());
+        colorImg.setFromPixels(cam_left.getPixels());
         grayImage = colorImg;
 		if (bLearnBakground == true)
         {
@@ -47,14 +51,13 @@ void ofApp::update(){
         grayDiff.flagImageChanged();
         grayDiff.threshold(threshold);
 
-		// find contours which are between the size of 20 pixels and 1/3 the w*h pixels.
-		// also, find holes is set to true so we will get interior contours as well....
-		contourFinder.findContours(grayDiff, 20, (WIDTH*HEIGHT)/3, 10, true);	// find holes
+		contourFinder.findContours(grayDiff, 100, (WIDTH*HEIGHT)/4, 10, false);	// find holes
     }
 }
 
 //--------------------------------------------------------------
-void ofApp::draw(){
+void ofApp::draw()
+{
     ofBackground(0);
     ofSetColor(255);
 
@@ -77,10 +80,12 @@ void ofApp::draw(){
 }
 
 //--------------------------------------------------------------
-void ofApp::keyPressed(int key){
-
+void ofApp::keyPressed(int key)
+{
 	switch(key)
     {
+        case 'q':
+            std::exit(0);
 		case ' ':
 			bLearnBakground = true;
 			break;
