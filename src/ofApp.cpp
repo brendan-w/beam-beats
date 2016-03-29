@@ -1,14 +1,40 @@
 #include "ofApp.h"
 #include "ofxPS3EyeGrabber.h"
 
-#define WIDTH 320
-#define HEIGHT 240
-#define FRAMERATE 60
+
+
+BeamCamera::BeamCamera(const string cam_data_dir)
+{
+    
+}
+
+
+
 
 
 //--------------------------------------------------------------
 void ofApp::setup()
 {
+
+    std::vector<ofVideoDevice> devices = ofxPS3EyeGrabber().listDevices();
+
+    // Now cycle through the devices and set up grabbers for each.
+    for (std::size_t i = 0; i < devices.size(); ++i)
+    {
+        std::stringstream ss;
+
+        ss << devices[i].id << ": " << devices[i].deviceName << " : " << devices[i].serialID;
+
+        if (!devices[i].bAvailable)
+        {
+            ss << " - unavailable ";
+        }
+
+        ofLogNotice("ofApp::setup") << ss.str();
+    }
+
+
+
     // Set the video grabber to the ofxPS3EyeGrabber.
     cam_left.setGrabber(std::make_shared<ofxPS3EyeGrabber>());
 

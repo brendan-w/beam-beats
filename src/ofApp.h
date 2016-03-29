@@ -3,10 +3,15 @@
 #include "ofMain.h"
 #include "ofxOpenCv.h"
 
+#define WIDTH 320
+#define HEIGHT 240
+#define FRAMERATE 60
+
+
 class BeamCamera
 {
 public:
-    BeamCamera();
+    BeamCamera(const string cam_data_dir);
     ~BeamCamera();
 
     void update();
