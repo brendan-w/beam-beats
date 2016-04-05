@@ -1,2 +1,3 @@
 ofxPS3EyeGrabber
 ofxOpenCv
+ofxXmlSettings

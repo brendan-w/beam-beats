@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxXmlSettings.h"
 #include "ofxOpenCv.h"
 
 #define WIDTH 320
@@ -17,7 +18,7 @@ public:
 
     void update();
     void draw(int x, int y);
-    void get_hands_for_beam(int beam);
+    vector<ofxCvBlob> blobs_for_beam(int beam);
 
     void learn_background();
     void start_learning_beam(int beam);
@@ -26,9 +27,16 @@ public:
     int get_threshold();
     void adjust_threshold(int delta);
 
+    bool is_learning();
+
 private:
+    void save_config();
+    void load_config();
+    void release_beam_masks();
+
     const string cam_data;
     int threshold;
+    int learning;
 
     ofVideoGrabber grabber;
 
@@ -39,7 +47,8 @@ private:
     ofxCvGrayscaleImage grey_beam_working; // working buffer for single-beam masking operations
 
     //masks for differentiating each beam
-    std::vector<ofxCvGrayscaleImage> beam_masks;
+    //WANRING: could be a sparse array
+    vector<ofxCvGrayscaleImage> beam_masks;
 
     //blob detector
     ofxCvContourFinder contourFinder;

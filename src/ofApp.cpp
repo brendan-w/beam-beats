@@ -1,6 +1,10 @@
+
+#include <sys/stat.h>
+
 #include "ofApp.h"
 #include "ofxPS3EyeGrabber.h"
 
+#define NOT_LEARNING -1
 #define THRESHOLD_INCREMENT 2
 
 
@@ -23,15 +27,31 @@ BeamCamera::BeamCamera(const string dir) : cam_data(dir)
     grey_beam_working.allocate(WIDTH, HEIGHT);
 
     threshold = INIT_THRESHOLD;
+    learning = NOT_LEARNING;
+
+    load_config();
 }
 
 BeamCamera::~BeamCamera()
 {
+    save_config();
+
     //release our surfaces
     raw.clear();
     grey_bg.clear();
     grey_working.clear();
     grey_beam_working.clear();
+
+    release_beam_masks();
+}
+
+void BeamCamera::release_beam_masks()
+{
+    for(ofxCvGrayscaleImage& mask : beam_masks)
+    {
+        if(mask.bAllocated)
+            mask.clear();
+    }
 }
 
 void BeamCamera::update()
@@ -44,11 +64,18 @@ void BeamCamera::update()
 
         //perform background subtraction
         grey_working = raw;
-        cvSub(grey_working.getCvImage(), grey_bg.getCvImage(), grey_working.getCvImage());
+        cvSub(grey_working.getCvImage(),
+              grey_bg.getCvImage(),
+              grey_working.getCvImage());
         grey_working.flagImageChanged();
 
         //apply our intensity threshold
         grey_working.threshold(threshold);
+
+        if(is_learning())
+        {
+            //TODO: build the new beam mask
+        }
     }
 }
 
@@ -76,17 +103,59 @@ void BeamCamera::learn_background()
     grey_bg = raw;
 }
 
-void BeamCamera::get_hands_for_beam(int beam)
+bool BeamCamera::is_learning()
 {
+    return learning != NOT_LEARNING;
+}
+
+void BeamCamera::start_learning_beam(int beam)
+{
+    //make sure our mask array has a spot for this beam
+    if(beam >= beam_masks.size())
+        beam_masks.resize(beam + 1);
+
+    // if the image exists, reset it
+    if(beam_masks[beam].bAllocated)
+        beam_masks[beam].clear();
+    beam_masks[beam].allocate(WIDTH, HEIGHT);
+
+    learning = beam;
+}
+
+void BeamCamera::stop_learning_beam()
+{
+    learning = NOT_LEARNING;
+}
+
+vector<ofxCvBlob> BeamCamera::blobs_for_beam(int beam)
+{
+    //return early if there's nothing to process
+    if(beam >= beam_masks.size() || beam_masks[beam].bAllocated)
+        return vector<ofxCvBlob>();
+
     //apply the mask that corresponds to this beam
-    grey_beam_working = grey_working;
-    //TODO
+    cvAnd(grey_working.getCvImage(),
+          beam_masks[beam].getCvImage(),
+          grey_beam_working.getCvImage());
+    grey_beam_working.flagImageChanged();
 
     //find our hand blobs
     contourFinder.findContours(grey_beam_working, 100, (WIDTH*HEIGHT)/4, 10, false);	// find holes
-
-    //TODO: return something
+    return contourFinder.blobs;
 }
+
+void BeamCamera::load_config()
+{
+    release_beam_masks();
+}
+
+
+void BeamCamera::save_config()
+{
+
+}
+
+
 
 
 //--------------------------------------------------------------
