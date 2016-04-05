@@ -1,15 +1,92 @@
 #include "ofApp.h"
 #include "ofxPS3EyeGrabber.h"
 
+#define THRESHOLD_INCREMENT 2
 
 
-BeamCamera::BeamCamera(const string cam_data_dir)
+BeamCamera::BeamCamera(const string dir) : cam_data(dir)
 {
-    
+    grabber.setGrabber(std::make_shared<ofxPS3EyeGrabber>());
+
+    grabber.setPixelFormat(OF_PIXELS_RGB);
+    grabber.setDesiredFrameRate(FRAMERATE);
+    grabber.setup(WIDTH, HEIGHT);
+
+    //PS3 Eye specific settings
+    grabber.getGrabber<ofxPS3EyeGrabber>()->setAutogain(false);
+    grabber.getGrabber<ofxPS3EyeGrabber>()->setAutoWhiteBalance(false);
+
+    //allocate our working surfaces
+    raw.allocate(WIDTH, HEIGHT);
+    grey_bg.allocate(WIDTH, HEIGHT);
+    grey_working.allocate(WIDTH, HEIGHT);
+    grey_beam_working.allocate(WIDTH, HEIGHT);
+
+    threshold = INIT_THRESHOLD;
 }
 
+BeamCamera::~BeamCamera()
+{
+    //release our surfaces
+    raw.clear();
+    grey_bg.clear();
+    grey_working.clear();
+    grey_beam_working.clear();
+}
 
+void BeamCamera::update()
+{
+    grabber.update();
 
+    if(grabber.isFrameNew())
+    {
+        raw.setFromPixels(grabber.getPixels());
+
+        //perform background subtraction
+        grey_working = raw;
+        cvSub(grey_working.getCvImage(), grey_bg.getCvImage(), grey_working.getCvImage());
+        grey_working.flagImageChanged();
+
+        //apply our intensity threshold
+        grey_working.threshold(threshold);
+    }
+}
+
+void BeamCamera::draw(int x, int y)
+{
+    raw.draw(x, y);
+}
+
+int BeamCamera::get_threshold()
+{
+    return threshold;
+}
+
+void BeamCamera::adjust_threshold(int delta)
+{
+    //clamp to [0, 255]
+    int new_thresh = threshold + delta;
+    if(new_thresh < 0) new_thresh = 0;
+    else if(new_thresh > 255) new_thresh = 255;
+    threshold = new_thresh;
+}
+
+void BeamCamera::learn_background()
+{
+    grey_bg = raw;
+}
+
+void BeamCamera::get_hands_for_beam(int beam)
+{
+    //apply the mask that corresponds to this beam
+    grey_beam_working = grey_working;
+    //TODO
+
+    //find our hand blobs
+    contourFinder.findContours(grey_beam_working, 100, (WIDTH*HEIGHT)/4, 10, false);	// find holes
+
+    //TODO: return something
+}
 
 
 //--------------------------------------------------------------
@@ -33,52 +110,13 @@ void ofApp::setup()
         ofLogNotice("ofApp::setup") << ss.str();
     }
 
-
-
-    // Set the video grabber to the ofxPS3EyeGrabber.
-    cam_left.setGrabber(std::make_shared<ofxPS3EyeGrabber>());
-
-    cam_left.setPixelFormat(OF_PIXELS_RGB);
-    cam_left.setDesiredFrameRate(60);
-    cam_left.setup(WIDTH, HEIGHT);
-
-    //PS3 Eye specific settings
-    cam_left.getGrabber<ofxPS3EyeGrabber>()->setAutogain(false);
-    cam_left.getGrabber<ofxPS3EyeGrabber>()->setAutoWhiteBalance(false);
-
-    colorImg.allocate(WIDTH, HEIGHT);
-    grayImage.allocate(WIDTH, HEIGHT);
-    grayBg.allocate(WIDTH, HEIGHT);
-    grayDiff.allocate(WIDTH, HEIGHT);
-
-    bLearnBakground = true;
-    threshold = 80;
+    cam_left = new BeamCamera("left");
 }
 
 //--------------------------------------------------------------
 void ofApp::update()
 {
-    cam_left.update();
-
-    if(cam_left.isFrameNew())
-    {
-        colorImg.setFromPixels(cam_left.getPixels());
-        grayImage = colorImg;
-		if (bLearnBakground == true)
-        {
-            // the = sign copys the pixels from grayImage into grayBg (operator overloading)
-			grayBg = grayImage;
-			bLearnBakground = false;
-		}
-
-		// take the abs value of the difference between background and incoming and then threshold:
-		//grayDiff.absDiff(grayBg, grayImage);
-        cvSub(grayImage.getCvImage(), grayBg.getCvImage(), grayDiff.getCvImage());
-        grayDiff.flagImageChanged();
-        grayDiff.threshold(threshold);
-
-		contourFinder.findContours(grayDiff, 100, (WIDTH*HEIGHT)/4, 10, false);	// find holes
-    }
+    cam_left->update();
 }
 
 //--------------------------------------------------------------
@@ -87,20 +125,17 @@ void ofApp::draw()
     ofBackground(0);
     ofSetColor(255);
 
-    colorImg.draw(0, 0);
-    grayDiff.draw(WIDTH, 0);
+    cam_left->draw(0, 0);
 
-    for(int i = 0; i < contourFinder.nBlobs; i++)
-    {
-        contourFinder.blobs[i].draw(0, 0);
-        contourFinder.blobs[i].draw(WIDTH, 0);
-    }
+    //for(int i = 0; i < contourFinder.nBlobs; i++)
+    //{
+    //    contourFinder.blobs[i].draw(0, 0);
+    //    contourFinder.blobs[i].draw(WIDTH, 0);
+    //}
 
     ofSetHexColor(0xffffff);
     stringstream t;
-    t << "Threshold: " << threshold << std::endl
-      << "Blobs: " << contourFinder.nBlobs << std::endl
-      << "FPS: " << ofGetFrameRate();
+    t << "FPS: " << ofGetFrameRate();
 
     ofDrawBitmapString(t.str(), 20, 20);
 }
@@ -113,15 +148,13 @@ void ofApp::keyPressed(int key)
         case 'q':
             std::exit(0);
 		case ' ':
-			bLearnBakground = true;
+			cam_left->learn_background();
 			break;
 		case OF_KEY_UP:
-			threshold++;
-			if (threshold > 255) threshold = 255;
+		    cam_left->adjust_threshold(THRESHOLD_INCREMENT);
 			break;
 		case OF_KEY_DOWN:
-			threshold--;
-			if (threshold < 0) threshold = 0;
+		    cam_left->adjust_threshold(-THRESHOLD_INCREMENT);
 			break;
 	}
 }
