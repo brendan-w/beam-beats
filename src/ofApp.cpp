@@ -74,7 +74,7 @@ void BeamCamera::update()
 
         if(is_learning())
         {
-            //TODO: build the new beam mask
+            add_to_mask(learning);
         }
     }
 }
@@ -127,6 +127,19 @@ void BeamCamera::stop_learning_beam()
     learning = NOT_LEARNING;
 }
 
+void BeamCamera::add_to_mask(int beam)
+{
+    //this function assumes that we already have a mask allocated
+    if(beam >= beam_masks.size() || beam_masks[beam].bAllocated)
+        return;
+
+    cvOr(grey_working.getCvImage(),
+         beam_masks[beam].getCvImage(),
+         beam_masks[beam].getCvImage());
+
+    beam_masks[beam].flagImageChanged();
+}
+
 vector<ofxCvBlob> BeamCamera::blobs_for_beam(int beam)
 {
     //return early if there's nothing to process
@@ -148,7 +161,6 @@ void BeamCamera::load_config()
 {
     release_beam_masks();
 }
-
 
 void BeamCamera::save_config()
 {

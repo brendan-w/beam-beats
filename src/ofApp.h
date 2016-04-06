@@ -32,6 +32,7 @@ public:
 private:
     void save_config();
     void load_config();
+    void add_to_mask(int beam);
     void release_beam_masks();
 
     const string cam_data;
