@@ -35,7 +35,7 @@ private:
     void add_to_mask(int beam);
     void release_beam_masks();
 
-    const string cam_data;
+    const string cam_name;
     int threshold;
     int learning;
 
@@ -77,6 +77,7 @@ class ofApp : public ofBaseApp{
 
     private:
         void print_camera_list();
+        void stop_learning_beams();
         BeamCamera* cam_left;
         BeamCamera* cam_right;
 };

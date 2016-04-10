@@ -1,5 +1,6 @@
 
 #include <sys/stat.h>
+#include <cmath>
 
 #include "ofApp.h"
 #include "ofxPS3EyeGrabber.h"
@@ -8,7 +9,7 @@
 #define THRESHOLD_INCREMENT 2
 
 
-BeamCamera::BeamCamera(int deviceID, const string dir) : cam_data(dir)
+BeamCamera::BeamCamera(int deviceID, const string name) : cam_name(name)
 {
     grabber.setGrabber(std::make_shared<ofxPS3EyeGrabber>());
     grabber.setDeviceID(deviceID);
@@ -82,8 +83,29 @@ void BeamCamera::update()
 
 void BeamCamera::draw(int x, int y)
 {
+    //draw the main surfaces
     raw.draw(x, y);
     grey_working.draw(x + WIDTH, y);
+
+    //draw the beam masks
+    //figure out how many cols/rows we need
+    int cell_divisor = (int) ceil(sqrt((double) beam_masks.size()));
+    if(cell_divisor < 1)
+        cell_divisor = 1;
+
+    const int mask_width = WIDTH / cell_divisor;
+    const int mask_height = HEIGHT / cell_divisor;
+
+    for(size_t i = 0; i < beam_masks.size(); i++)
+    {
+        ofxCvGrayscaleImage& mask = beam_masks[i];
+        if(mask.bAllocated)
+        {
+            int mx = x + (WIDTH * 2) + (mask_width * i);
+            int my = y + (mask_height * (i / cell_divisor));
+            mask.draw(mx, my, mask_width, mask_height);
+        }
+    }
 }
 
 int BeamCamera::get_threshold()
@@ -112,13 +134,17 @@ bool BeamCamera::is_learning()
 
 void BeamCamera::start_learning_beam(int beam)
 {
+    ofLog() << cam_name << " started learning beam " << beam;
+
     //make sure our mask array has a spot for this beam
-    if(beam >= beam_masks.size())
+    if(beam >= (int) beam_masks.size())
         beam_masks.resize(beam + 1);
 
     // if the image exists, reset it
     if(beam_masks[beam].bAllocated)
         beam_masks[beam].clear();
+
+    //allocate the new image
     beam_masks[beam].allocate(WIDTH, HEIGHT);
     cvZero(beam_masks[beam].getCvImage());
 
@@ -127,13 +153,14 @@ void BeamCamera::start_learning_beam(int beam)
 
 void BeamCamera::stop_learning_beam()
 {
+    ofLog() << cam_name << " stopped learning beam " << learning;
     learning = NOT_LEARNING;
 }
 
 void BeamCamera::add_to_mask(int beam)
 {
     //this function assumes that we already have a mask allocated
-    if(beam >= beam_masks.size() || beam_masks[beam].bAllocated)
+    if(beam >= (int) beam_masks.size() || !beam_masks[beam].bAllocated)
         return;
 
     cvOr(grey_working.getCvImage(),
@@ -146,7 +173,7 @@ void BeamCamera::add_to_mask(int beam)
 vector<ofxCvBlob> BeamCamera::blobs_for_beam(int beam)
 {
     //return early if there's nothing to process
-    if(beam >= beam_masks.size() || beam_masks[beam].bAllocated)
+    if(beam >= (int) beam_masks.size() || !beam_masks[beam].bAllocated)
         return vector<ofxCvBlob>();
 
     //apply the mask that corresponds to this beam
@@ -238,6 +265,9 @@ void ofApp::keyPressed(int key)
             cam_left->learn_background();
             cam_right->learn_background();
             break;
+        case OF_KEY_RETURN:
+            stop_learning_beams();
+            break;
         case OF_KEY_UP:
             cam_left->adjust_threshold(THRESHOLD_INCREMENT);
             cam_right->adjust_threshold(THRESHOLD_INCREMENT);
@@ -246,5 +276,26 @@ void ofApp::keyPressed(int key)
             cam_left->adjust_threshold(-THRESHOLD_INCREMENT);
             cam_right->adjust_threshold(-THRESHOLD_INCREMENT);
             break;
+        default:
+            //test for beam-learning hotkeys
+            if(key >= '1' && key <= '9')
+            {
+                int beam = key - '1';
+
+                stop_learning_beams(); //stop learning any previous beams
+
+                if(!cam_left->is_learning())
+                    cam_left->start_learning_beam(beam);
+                if(!cam_right->is_learning())
+                    cam_right->start_learning_beam(beam);
+            }
     }
+}
+
+void ofApp::stop_learning_beams()
+{
+    if(cam_left->is_learning())
+        cam_left->stop_learning_beam();
+    if(cam_right->is_learning())
+        cam_right->stop_learning_beam();
 }
