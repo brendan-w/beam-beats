@@ -20,6 +20,7 @@ public:
     void draw_raw(int x, int y);
     void draw_working(int x, int y);
     void draw_masks(int x, int y);
+
     vector<ofxCvBlob> blobs_for_beam(int beam);
 
     void learn_background();
