@@ -120,6 +120,7 @@ void BeamCamera::start_learning_beam(int beam)
     if(beam_masks[beam].bAllocated)
         beam_masks[beam].clear();
     beam_masks[beam].allocate(WIDTH, HEIGHT);
+    cvZero(beam_masks[beam].getCvImage());
 
     learning = beam;
 }
