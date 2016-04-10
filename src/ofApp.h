@@ -17,7 +17,9 @@ public:
     ~BeamCamera();
 
     void update();
-    void draw(int x, int y);
+    void draw_raw(int x, int y);
+    void draw_working(int x, int y);
+    void draw_masks(int x, int y);
     vector<ofxCvBlob> blobs_for_beam(int beam);
 
     void learn_background();
@@ -78,6 +80,7 @@ class ofApp : public ofBaseApp{
     private:
         void print_camera_list();
         void stop_learning_beams();
+        bool show_raw;
         BeamCamera* cam_left;
         BeamCamera* cam_right;
 };

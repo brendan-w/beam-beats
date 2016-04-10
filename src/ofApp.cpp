@@ -1,5 +1,5 @@
 
-#include <sys/stat.h>
+#include <sys/stat.h> //mkdir()
 #include <cmath>
 
 #include "ofApp.h"
@@ -31,6 +31,8 @@ BeamCamera::BeamCamera(int deviceID, const string name) : cam_name(name)
     threshold = INIT_THRESHOLD;
     learning = NOT_LEARNING;
 
+    //make sure our data diractories exist
+    mkdir(name.c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
     load_config();
 }
 
@@ -81,14 +83,20 @@ void BeamCamera::update()
     }
 }
 
-void BeamCamera::draw(int x, int y)
+void BeamCamera::draw_raw(int x, int y)
 {
-    //draw the main surfaces
     raw.draw(x, y);
-    grey_working.draw(x + WIDTH, y);
+}
 
+void BeamCamera::draw_working(int x, int y)
+{
+    grey_working.draw(x, y);
+}
+
+void BeamCamera::draw_masks(int x, int y)
+{
     //draw the beam masks
-    //figure out how many cols/rows we need
+    //figure out how many cols/rows we need for tiling
     int cell_divisor = (int) ceil(sqrt((double) beam_masks.size()));
     if(cell_divisor < 1)
         cell_divisor = 1;
@@ -101,7 +109,7 @@ void BeamCamera::draw(int x, int y)
         ofxCvGrayscaleImage& mask = beam_masks[i];
         if(mask.bAllocated)
         {
-            int mx = x + (WIDTH * 2) + (mask_width * i);
+            int mx = x + (mask_width * i);
             int my = y + (mask_height * (i / cell_divisor));
             mask.draw(mx, my, mask_width, mask_height);
         }
@@ -189,14 +197,13 @@ vector<ofxCvBlob> BeamCamera::blobs_for_beam(int beam)
 
 void BeamCamera::load_config()
 {
-    release_beam_masks();
+    release_beam_masks(); //dump any existing masks
 }
 
 void BeamCamera::save_config()
 {
 
 }
-
 
 
 
@@ -211,6 +218,7 @@ ofApp::~ofApp()
 //--------------------------------------------------------------
 void ofApp::setup()
 {
+    show_raw = false;
     print_camera_list();
 
     cam_left = new BeamCamera(0, "left");
@@ -238,8 +246,26 @@ void ofApp::draw()
     ofBackground(0);
     ofSetColor(255);
 
-    cam_left->draw(0, 0);
-    cam_right->draw(0, HEIGHT);
+    if(show_raw)
+    {
+        cam_left->draw_raw(0, 0);
+        cam_right->draw_raw(0, HEIGHT);
+    }
+    else
+    {
+        cam_left->draw_working(0, 0);
+        cam_right->draw_working(0, HEIGHT);
+    }
+
+    cam_left->draw_masks(WIDTH, 0);
+    cam_right->draw_masks(WIDTH, HEIGHT);
+
+    vector<ofxCvBlob> blobs = cam_right->blobs_for_beam(0);
+
+    for(ofxCvBlob& blob : blobs)
+    {
+        blob.draw(0, HEIGHT);
+    }
 
     //for(int i = 0; i < contourFinder.nBlobs; i++)
     //{
@@ -264,6 +290,9 @@ void ofApp::keyPressed(int key)
         case ' ':
             cam_left->learn_background();
             cam_right->learn_background();
+            break;
+        case OF_KEY_TAB:
+            show_raw = !show_raw;
             break;
         case OF_KEY_RETURN:
             stop_learning_beams();
