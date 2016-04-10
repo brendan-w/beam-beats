@@ -182,26 +182,18 @@ ofApp::~ofApp()
 //--------------------------------------------------------------
 void ofApp::setup()
 {
-
-    std::vector<ofVideoDevice> devices = ofxPS3EyeGrabber().listDevices();
-
-    // Now cycle through the devices and set up grabbers for each.
-    for (std::size_t i = 0; i < devices.size(); ++i)
-    {
-        std::stringstream ss;
-
-        ss << devices[i].id << ": " << devices[i].deviceName << " : " << devices[i].serialID;
-
-        if (!devices[i].bAvailable)
-        {
-            ss << " - unavailable ";
-        }
-
-        ofLogNotice("ofApp::setup") << ss.str();
-    }
+    print_camera_list();
 
     cam_left = new BeamCamera(0, "left");
     cam_right = new BeamCamera(1, "right");
+}
+
+void ofApp::print_camera_list()
+{
+    for(ofVideoDevice device : ofxPS3EyeGrabber().listDevices())
+    {
+        ofLog() << "ID:" << device.id << ", Name:" << device.deviceName << ", Available:" << device.bAvailable;
+    }
 }
 
 //--------------------------------------------------------------
