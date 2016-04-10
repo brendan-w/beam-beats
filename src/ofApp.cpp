@@ -83,6 +83,7 @@ void BeamCamera::update()
 void BeamCamera::draw(int x, int y)
 {
     raw.draw(x, y);
+    grey_working.draw(x + WIDTH, y);
 }
 
 int BeamCamera::get_threshold()
@@ -154,7 +155,7 @@ vector<ofxCvBlob> BeamCamera::blobs_for_beam(int beam)
     grey_beam_working.flagImageChanged();
 
     //find our hand blobs
-    contourFinder.findContours(grey_beam_working, 100, (WIDTH*HEIGHT)/4, 10, false);	// find holes
+    contourFinder.findContours(grey_beam_working, 100, (WIDTH*HEIGHT)/4, 10, false);    // find holes
     return contourFinder.blobs;
 }
 
@@ -228,18 +229,21 @@ void ofApp::draw()
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key)
 {
-	switch(key)
+    switch(key)
     {
         case 'q':
             std::exit(0);
-		case ' ':
-			cam_left->learn_background();
-			break;
-		case OF_KEY_UP:
-		    cam_left->adjust_threshold(THRESHOLD_INCREMENT);
-			break;
-		case OF_KEY_DOWN:
-		    cam_left->adjust_threshold(-THRESHOLD_INCREMENT);
-			break;
-	}
+        case ' ':
+            cam_left->learn_background();
+            cam_right->learn_background();
+            break;
+        case OF_KEY_UP:
+            cam_left->adjust_threshold(THRESHOLD_INCREMENT);
+            cam_right->adjust_threshold(THRESHOLD_INCREMENT);
+            break;
+        case OF_KEY_DOWN:
+            cam_left->adjust_threshold(-THRESHOLD_INCREMENT);
+            cam_right->adjust_threshold(-THRESHOLD_INCREMENT);
+            break;
+    }
 }
