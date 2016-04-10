@@ -13,7 +13,7 @@
 class BeamCamera
 {
 public:
-    BeamCamera(const string dir);
+    BeamCamera(int deviceID, const string dir);
     ~BeamCamera();
 
     void update();
@@ -75,5 +75,5 @@ class ofApp : public ofBaseApp{
 		//void gotMessage(ofMessage msg);
 
         BeamCamera* cam_left;
-        //BeamCamera* cam_right;
+        BeamCamera* cam_right;
 };

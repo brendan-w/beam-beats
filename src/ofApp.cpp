@@ -8,9 +8,10 @@
 #define THRESHOLD_INCREMENT 2
 
 
-BeamCamera::BeamCamera(const string dir) : cam_data(dir)
+BeamCamera::BeamCamera(int deviceID, const string dir) : cam_data(dir)
 {
     grabber.setGrabber(std::make_shared<ofxPS3EyeGrabber>());
+    grabber.setDeviceID(deviceID);
 
     grabber.setPixelFormat(OF_PIXELS_RGB);
     grabber.setDesiredFrameRate(FRAMERATE);
@@ -191,13 +192,15 @@ void ofApp::setup()
         ofLogNotice("ofApp::setup") << ss.str();
     }
 
-    cam_left = new BeamCamera("left");
+    cam_left = new BeamCamera(0, "left");
+    cam_right = new BeamCamera(1, "right");
 }
 
 //--------------------------------------------------------------
 void ofApp::update()
 {
     cam_left->update();
+    cam_right->update();
 }
 
 //--------------------------------------------------------------
@@ -207,6 +210,7 @@ void ofApp::draw()
     ofSetColor(255);
 
     cam_left->draw(0, 0);
+    cam_right->draw(0, HEIGHT);
 
     //for(int i = 0; i < contourFinder.nBlobs; i++)
     //{
