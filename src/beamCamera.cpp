@@ -89,7 +89,6 @@ void BeamCamera::draw_working(int x, int y)
 
 void BeamCamera::draw_masks(int x, int y)
 {
-    //draw the beam masks
     cvZero(grey_beam_working.getCvImage());
 
     for(ofxCvGrayscaleImage& mask : beam_masks)

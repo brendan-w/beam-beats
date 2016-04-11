@@ -1,10 +1,19 @@
 #pragma once
 
+#include <opencv2/calib3d.hpp>
+
 #include "ofMain.h"
 #include "beamCamera.h"
 
-#define THRESHOLD_INCREMENT 2
+using namespace cv;
 
+//TODO: make this more dynamic
+#define CALIB_BEAMS 4
+#define CALIB_HEIGHTS 3
+
+//UI
+#define THRESHOLD_INCREMENT 2
+const int CALIB_KEYS[] = { 'z', 'x', 'c', 'v', 'a', 's', 'd', 'f', 'q', 'w', 'e', 'r' };
 
 class ofApp : public ofBaseApp{
 	public:
@@ -26,9 +35,19 @@ class ofApp : public ofBaseApp{
         //void gotMessage(ofMessage msg);
 
     private:
+        //funcs ---------------------
         void print_camera_list();
         void stop_learning_beams();
+        void init_calibration();
+        void save_calibration_point(int n);
+
+        //data ----------------------
         bool show_raw;
         BeamCamera* cam_left;
         BeamCamera* cam_right;
+
+        //opencv stereo calibration data
+        vector<vector<Point3f>> objectPoints;
+        vector<vector<Point2f>> imagePointsLeft;
+        vector<vector<Point2f>> imagePointsRight;
 };

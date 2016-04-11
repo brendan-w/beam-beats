@@ -16,8 +16,33 @@ void ofApp::setup()
     show_raw = false;
     print_camera_list();
 
+    init_calibration();
+
     cam_left = new BeamCamera(0, "left");
     cam_right = new BeamCamera(1, "right");
+}
+
+void ofApp::init_calibration()
+{
+
+    //living life on the edge. only using 1 calibration image
+    objectPoints.resize(1);
+    imagePointsLeft.resize(1);
+    imagePointsRight.resize(1);
+
+    imagePointsLeft[0].resize(CALIB_BEAMS);
+    imagePointsRight[0].resize(CALIB_BEAMS);
+
+    //generate the desired coordinates of the targets
+    for(int x = 0; x < CALIB_BEAMS; x++)
+    {
+        for(int y = 0; y < CALIB_HEIGHTS; y++)
+        {
+            objectPoints[0].push_back(Point3f((float) x,
+                                              ((float) y / (CALIB_HEIGHTS - 1)),
+                                              0.0));
+        }
+    }
 }
 
 void ofApp::print_camera_list()
@@ -62,12 +87,6 @@ void ofApp::draw()
         blob.draw(0, HEIGHT);
     }
 
-    //for(int i = 0; i < contourFinder.nBlobs; i++)
-    //{
-    //    contourFinder.blobs[i].draw(0, 0);
-    //    contourFinder.blobs[i].draw(WIDTH, 0);
-    //}
-
     ofSetHexColor(0xffffff);
     stringstream t;
     t << "FPS: " << ofGetFrameRate();
@@ -80,8 +99,6 @@ void ofApp::keyPressed(int key)
 {
     switch(key)
     {
-        case 'q':
-            std::exit(0);
         case ' ':
             cam_left->learn_background();
             cam_right->learn_background();
@@ -100,6 +117,7 @@ void ofApp::keyPressed(int key)
             cam_left->adjust_threshold(-THRESHOLD_INCREMENT);
             cam_right->adjust_threshold(-THRESHOLD_INCREMENT);
             break;
+
         default:
             //test for beam-learning hotkeys
             if(key >= '1' && key <= '9')
@@ -113,6 +131,19 @@ void ofApp::keyPressed(int key)
                 if(!cam_right->is_learning())
                     cam_right->start_learning_beam(beam);
             }
+            else
+            {
+                //this must be a calibration point recorder
+                //3D calibration keys
+                for(int n = 0; n < CALIB_BEAMS * CALIB_HEIGHTS; n++)
+                {
+                    if(key == CALIB_KEYS[n])
+                    {
+                        save_calibration_point(n);
+                        break;
+                    }
+                }
+            }
     }
 }
 
@@ -122,4 +153,12 @@ void ofApp::stop_learning_beams()
         cam_left->stop_learning_beam();
     if(cam_right->is_learning())
         cam_right->stop_learning_beam();
+}
+
+void ofApp::save_calibration_point(int n)
+{
+    //figure out which beam this point SHOULD be in
+    int beam = n % CALIB_BEAMS;
+    vector<ofxCvBlob> blobs_left = cam_left->blobs_for_beam(beam);
+    vector<ofxCvBlob> blobs_right = cam_left->blobs_for_beam(beam);
 }
