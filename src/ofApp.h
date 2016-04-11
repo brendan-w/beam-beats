@@ -4,6 +4,8 @@
 
 #include "ofMain.h"
 #include "beamCamera.h"
+#include "ofxMidi.h"
+
 
 using namespace cv;
 
@@ -36,7 +38,7 @@ class ofApp : public ofBaseApp{
 
     private:
         //funcs ---------------------
-        void print_camera_list();
+        void list_devices();
         void stop_learning_beams();
         void init_calibration();
         void save_calibration_point(int n);

@@ -3,6 +3,7 @@
 #include "ofxPS3EyeGrabber.h"
 
 
+
 //--------------------------------------------------------------
 ofApp::~ofApp()
 {
@@ -14,7 +15,7 @@ ofApp::~ofApp()
 void ofApp::setup()
 {
     show_raw = false;
-    print_camera_list();
+    list_devices();
 
     init_calibration();
 
@@ -45,12 +46,16 @@ void ofApp::init_calibration()
     }
 }
 
-void ofApp::print_camera_list()
+void ofApp::list_devices()
 {
+    ofLog() << "Cameras ---------------";
     for(ofVideoDevice device : ofxPS3EyeGrabber().listDevices())
     {
         ofLog() << "ID:" << device.id << ", Name:" << device.deviceName << ", Available:" << device.bAvailable;
     }
+
+    ofLog() << "MIDI Ports ------------";
+    ofxMidiOut::listPorts();
 }
 
 //--------------------------------------------------------------
