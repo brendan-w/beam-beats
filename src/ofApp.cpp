@@ -161,4 +161,19 @@ void ofApp::save_calibration_point(int n)
     int beam = n % CALIB_BEAMS;
     vector<ofxCvBlob> blobs_left = cam_left->blobs_for_beam(beam);
     vector<ofxCvBlob> blobs_right = cam_left->blobs_for_beam(beam);
+
+    //make sure that only one blob was detected in each camera
+    if(blobs_left.size() != 1 || blobs_right.size() != 1)
+    {
+        ofLog() << "Could not save calibration point";
+        ofLog() << "There were either zero or multiple blobs, or one camera couldn't see the blob";
+        return;
+    }
+
+    //record the blob locations for openCV
+    imagePointsLeft[0][n].x = blobs_left[0].centroid.x;
+    imagePointsLeft[0][n].y = blobs_left[0].centroid.y;
+
+    imagePointsRight[0][n].x = blobs_right[0].centroid.x;
+    imagePointsRight[0][n].y = blobs_right[0].centroid.y;
 }
