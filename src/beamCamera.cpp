@@ -1,12 +1,14 @@
 
-#include <sys/stat.h> //mkdir()
 #include <cmath>
 
 #include "ofxPS3EyeGrabber.h"
 #include "beamCamera.h"
 
+
 BeamCamera::BeamCamera(int deviceID, const string name) : cam_name(name)
 {
+    load_data();
+
     grabber.setGrabber(std::make_shared<ofxPS3EyeGrabber>());
     grabber.setDeviceID(deviceID);
 
@@ -26,15 +28,11 @@ BeamCamera::BeamCamera(int deviceID, const string name) : cam_name(name)
 
     threshold = INIT_THRESHOLD;
     learning = NOT_LEARNING;
-
-    //make sure our data diractories exist
-    mkdir(name.c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
-    load_config();
 }
 
 BeamCamera::~BeamCamera()
 {
-    save_config();
+    save_data();
 
     //release our surfaces
     raw.clear();
@@ -92,24 +90,20 @@ void BeamCamera::draw_working(int x, int y)
 void BeamCamera::draw_masks(int x, int y)
 {
     //draw the beam masks
-    //figure out how many cols/rows we need for tiling
-    int cell_divisor = (int) ceil(sqrt((double) beam_masks.size()));
-    if(cell_divisor < 1)
-        cell_divisor = 1;
+    cvZero(grey_beam_working.getCvImage());
 
-    const int mask_width = WIDTH / cell_divisor;
-    const int mask_height = HEIGHT / cell_divisor;
-
-    for(size_t i = 0; i < beam_masks.size(); i++)
+    for(ofxCvGrayscaleImage& mask : beam_masks)
     {
-        ofxCvGrayscaleImage& mask = beam_masks[i];
         if(mask.bAllocated)
         {
-            int mx = x + (mask_width * i);
-            int my = y + (mask_height * (i / cell_divisor));
-            mask.draw(mx, my, mask_width, mask_height);
+            cvOr(grey_beam_working.getCvImage(),
+                 mask.getCvImage(),
+                 grey_beam_working.getCvImage());
+            grey_beam_working.flagImageChanged();
         }
     }
+
+    grey_beam_working.draw(x, y);
 }
 
 int BeamCamera::get_threshold()
@@ -191,12 +185,12 @@ vector<ofxCvBlob> BeamCamera::blobs_for_beam(int beam)
     return contourFinder.blobs;
 }
 
-void BeamCamera::load_config()
+void BeamCamera::load_data()
 {
     release_beam_masks(); //dump any existing masks
 }
 
-void BeamCamera::save_config()
+void BeamCamera::save_data()
 {
 
 }

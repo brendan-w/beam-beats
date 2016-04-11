@@ -33,11 +33,13 @@ public:
     bool is_learning();
 
 private:
-    void save_config();
-    void load_config();
+    //funcs --------------------
+    void save_data();
+    void load_data();
     void add_to_mask(int beam);
     void release_beam_masks();
 
+    //data --------------------
     const string cam_name;
     int threshold;
     int learning;
