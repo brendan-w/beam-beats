@@ -42,6 +42,7 @@ class ofApp : public ofBaseApp{
         void stop_learning_beams();
         void init_calibration();
         void save_calibration_point(int n);
+        void compute_calibration();
 
         //data ----------------------
         bool show_raw;

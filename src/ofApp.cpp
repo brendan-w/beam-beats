@@ -182,3 +182,25 @@ void ofApp::save_calibration_point(int n)
     imagePointsRight[0][n].x = blobs_right[0].centroid.x;
     imagePointsRight[0][n].y = blobs_right[0].centroid.y;
 }
+
+void ofApp::compute_calibration()
+{
+    Mat cameraMatrixLeft = Mat::eye(3, 3, CV_64F);
+    Mat cameraMatrixRight = Mat::eye(3, 3, CV_64F);
+    Mat distCoeffsLeft;
+    Mat distCoeffsRight;
+    Mat R, T, E, F;
+    double rms = stereoCalibrate(objectPoints,
+                                 imagePointsLeft,
+                                 imagePointsRight,
+                                 cameraMatrixLeft, distCoeffsLeft,
+                                 cameraMatrixRight, distCoeffsRight,
+                                 Size(WIDTH, HEIGHT),
+                                 R, T, E, F,
+                                 TermCriteria(TermCriteria::COUNT+TermCriteria::EPS, 100, 1e-5),
+                                 CALIB_FIX_ASPECT_RATIO +
+                                 CALIB_ZERO_TANGENT_DIST +
+                                 CALIB_SAME_FOCAL_LENGTH +
+                                 CALIB_RATIONAL_MODEL +
+                                 CALIB_FIX_K3 + CALIB_FIX_K4 + CALIB_FIX_K5);
+}
