@@ -203,4 +203,23 @@ void ofApp::compute_calibration()
                                  CALIB_SAME_FOCAL_LENGTH +
                                  CALIB_RATIONAL_MODEL +
                                  CALIB_FIX_K3 + CALIB_FIX_K4 + CALIB_FIX_K5);
+    Mat RLeft;
+    Mat RRight;
+    Mat PLeft;
+    Mat PRight;
+    Mat Q;
+
+    stereoRectify(cameraMatrixLeft,
+                  distCoeffsLeft,
+                  cameraMatrixRight,
+                  distCoeffsRight,
+                  Size(WIDTH, HEIGHT),
+                  R,
+                  T,
+                  RLeft,
+                  RRight,
+                  PLeft,
+                  PRight,
+                  Q,
+                  CALIB_ZERO_DISPARITY);
 }

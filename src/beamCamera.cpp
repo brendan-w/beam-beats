@@ -180,7 +180,7 @@ vector<ofxCvBlob> BeamCamera::blobs_for_beam(int beam)
     grey_beam_working.flagImageChanged();
 
     //find our hand blobs
-    contourFinder.findContours(grey_beam_working, 100, (WIDTH*HEIGHT)/4, 10, false);    // find holes
+    contourFinder.findContours(grey_beam_working, 100, (WIDTH*HEIGHT)/4, 10, false);
     return contourFinder.blobs;
 }
 
