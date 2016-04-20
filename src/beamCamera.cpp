@@ -7,8 +7,6 @@
 
 BeamCamera::BeamCamera(int deviceID, const string name) : cam_name(name)
 {
-    load_data();
-
     grabber.setGrabber(std::make_shared<ofxPS3EyeGrabber>());
     grabber.setDeviceID(deviceID);
 
@@ -32,8 +30,6 @@ BeamCamera::BeamCamera(int deviceID, const string name) : cam_name(name)
 
 BeamCamera::~BeamCamera()
 {
-    save_data();
-
     //release our surfaces
     raw.clear();
     grey_bg.clear();
@@ -150,6 +146,15 @@ void BeamCamera::start_learning_beam(int beam)
 
 void BeamCamera::stop_learning_beam()
 {
+    //save the mask to a file
+    ofImage mask;
+    mask.setFromPixels(beam_masks[learning].getPixels());
+    mask.setImageType(OF_IMAGE_GRAYSCALE);
+
+    stringstream filename;
+    filename << cam_name << "/" << learning << ".png";
+    mask.save(filename.str());
+
     ofLog() << cam_name << " stopped learning beam " << learning;
     learning = NOT_LEARNING;
 }
@@ -182,14 +187,4 @@ vector<ofxCvBlob> BeamCamera::blobs_for_beam(int beam)
     //find our hand blobs
     contourFinder.findContours(grey_beam_working, 100, (WIDTH*HEIGHT)/4, 10, false);
     return contourFinder.blobs;
-}
-
-void BeamCamera::load_data()
-{
-    release_beam_masks(); //dump any existing masks
-}
-
-void BeamCamera::save_data()
-{
-
 }

@@ -34,8 +34,6 @@ public:
 
 private:
     //funcs --------------------
-    void save_data();
-    void load_data();
     void add_to_mask(int beam);
     void release_beam_masks();
 
