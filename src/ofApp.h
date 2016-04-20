@@ -40,17 +40,9 @@ class ofApp : public ofBaseApp{
         //funcs ---------------------
         void list_devices();
         void stop_learning_beams();
-        void init_calibration();
-        void save_calibration_point(int n);
-        void compute_calibration();
 
         //data ----------------------
         bool show_raw;
         BeamCamera* cam_left;
         BeamCamera* cam_right;
-
-        //opencv stereo calibration data
-        vector<vector<Point3f>> objectPoints;
-        vector<vector<Point2f>> imagePointsLeft;
-        vector<vector<Point2f>> imagePointsRight;
 };
