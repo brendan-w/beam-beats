@@ -44,7 +44,7 @@ public:
 private:
     //funcs --------------------
     void add_to_mask(int beam);
-    void compute_min_rect(int beam);
+    void compute_beam_blob(int beam);
     bool mask_exists(int beam);
 
 
@@ -66,7 +66,7 @@ private:
     vector<ofxCvGrayscaleImage> beam_masks;
 
     //minimum area rects defining our beams
-    vector<CvBox2D> beam_rects;
+    vector<ofxCvBlob> beam_blobs;
 
     //blob detector
     ofxCvContourFinder contourFinder;

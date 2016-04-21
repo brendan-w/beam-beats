@@ -89,11 +89,17 @@ void BeamCamera::draw_masks(int x, int y)
             cvOr(grey_beam_working.getCvImage(),
                  mask.getCvImage(),
                  grey_beam_working.getCvImage());
-            grey_beam_working.flagImageChanged();
         }
     }
 
+    grey_beam_working.flagImageChanged();
     grey_beam_working.draw(x, y);
+
+    for(size_t i = 0; i < beam_masks.size(); i++)
+    {
+        if(beam_masks[i].bAllocated)
+            beam_blobs[i].draw();
+    }
 }
 
 int BeamCamera::get_threshold()
@@ -126,7 +132,10 @@ void BeamCamera::start_learning_beam(int beam)
 
     //make sure our mask array has a spot for this beam
     if(beam >= (int) beam_masks.size())
+    {
         beam_masks.resize(beam + 1);
+        beam_blobs.resize(beam + 1);
+    }
 
     // if the image exists, reset it
     if(beam_masks[beam].bAllocated)
@@ -141,6 +150,9 @@ void BeamCamera::start_learning_beam(int beam)
 
 void BeamCamera::stop_learning_beam()
 {
+    //compute and save the minimum area rect
+    compute_beam_blob(learning);
+
     //save the mask to a file
     ofImage mask;
     mask.setFromPixels(beam_masks[learning].getPixels());
@@ -167,7 +179,7 @@ void BeamCamera::add_to_mask(int beam)
     beam_masks[beam].flagImageChanged();
 }
 
-void BeamCamera::compute_min_rect(int beam)
+void BeamCamera::compute_beam_blob(int beam)
 {
     if(!mask_exists(beam))
         return;
@@ -183,6 +195,8 @@ void BeamCamera::compute_min_rect(int beam)
         ofLog() << "No beam mask detected";
         return;
     }
+
+    beam_blobs[beam] = contourFinder.blobs[0];
 }
 
 vector<ofxCvBlob> BeamCamera::blobs_for_beam(int beam)
