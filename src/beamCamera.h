@@ -11,7 +11,7 @@
 #define N_BLOBS 10
 
 #define FRAMERATE 60
-#define INIT_THRESHOLD 80
+#define INIT_THRESHOLD 128
 #define IMAGE_FORMAT ".png"
 
 #define NOT_LEARNING -1

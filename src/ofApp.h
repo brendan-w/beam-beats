@@ -36,7 +36,6 @@ class ofApp : public ofBaseApp{
         //funcs ---------------------
         void list_devices();
         void stop_learning_beams();
-        void shift_midi();
 
         //data ----------------------
         bool show_raw;

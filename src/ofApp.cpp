@@ -78,9 +78,29 @@ void ofApp::draw()
     for(ofxCvBlob& blob : blobs)
     {
         //process hands
-        float region = ofMap(blob.centroid.y, 0, HEIGHT, 0, sizeof_array(pentatonic) - 1);
-        ofLog() << "region " << region;
+        float region_f = ofMap(blob.centroid.y, 0, HEIGHT, 0, sizeof_array(pentatonic) - 1);
+        int region = (int) roundf(region_f);
+
+        //mark the current region as having a hand
+        current_regions[region] = true;
         blob.draw(0, 0);
+    }
+
+    //shift the midi out
+    for(int i = 0; i < sizeof_array(pentatonic); i++)
+    {
+        if(current_regions[i] && !beam_regions[i])
+        {
+            ofLog() << "Note ON " << pentatonic[i];
+            midi_out.sendNoteOn(1, pentatonic[i], 64);
+        }
+        else if(!current_regions[i] && beam_regions[i])
+        {
+            ofLog() << "Note OFF " << pentatonic[i];
+            midi_out.sendNoteOff(1, pentatonic[i], 64);
+        }
+
+        beam_regions[i] = current_regions[i];
     }
 
     /*
