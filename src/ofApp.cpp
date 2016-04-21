@@ -19,6 +19,12 @@ void ofApp::setup()
 
     cam_left = new BeamCamera(0, "left");
     cam_right = new BeamCamera(1, "right");
+    midi_out.openPort(1);
+
+    for(int i = 0; i < sizeof_array(beam_regions); i++)
+    {
+        beam_regions[i] = false;
+    }
 }
 
 void ofApp::list_devices()
@@ -61,18 +67,29 @@ void ofApp::draw()
     cam_right->draw_masks(WIDTH, HEIGHT);
 
     vector<ofxCvBlob> blobs;
+    bool current_regions[sizeof_array(pentatonic)];
+
+    for(int i = 0; i < sizeof_array(pentatonic); i++)
+    {
+        current_regions[i] = false;
+    }
 
     blobs = cam_left->blobs_for_beam(0);
     for(ofxCvBlob& blob : blobs)
     {
+        //process hands
+        float region = ofMap(blob.centroid.y, 0, HEIGHT, 0, sizeof_array(pentatonic) - 1);
+        ofLog() << "region " << region;
         blob.draw(0, 0);
     }
 
+    /*
     blobs = cam_right->blobs_for_beam(0);
     for(ofxCvBlob& blob : blobs)
     {
         blob.draw(0, HEIGHT);
     }
+    */
 
     ofSetHexColor(0xffffff);
     stringstream t;
