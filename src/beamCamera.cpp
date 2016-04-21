@@ -199,11 +199,11 @@ void BeamCamera::compute_beam_blob(int beam)
     beam_blobs[beam] = contourFinder.blobs[0];
 }
 
-vector<ofxCvBlob> BeamCamera::blobs_for_beam(int beam)
+vector<Hand> BeamCamera::hands_for_beam(int beam)
 {
     //return early if there's nothing to process
     if(!mask_exists(beam))
-        return vector<ofxCvBlob>();
+        return vector<Hand>();
 
     //apply the mask that corresponds to this beam
     cvAnd(grey_working.getCvImage(),
@@ -217,7 +217,8 @@ vector<ofxCvBlob> BeamCamera::blobs_for_beam(int beam)
                                BLOB_AREA_MAX,
                                N_BLOBS,
                                false); //find holes
-    return contourFinder.blobs;
+
+    //contourFinder.blobs is now populated
 }
 
 bool BeamCamera::mask_exists(int beam)

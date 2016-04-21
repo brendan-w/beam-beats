@@ -8,6 +8,11 @@
 const int midi_velocities[] = { 32, 64, 96, 128 };
 const int midi_scale[] = { 0, 3, 5, 7, 10, 12 }; //pentatonic
 
+class Note
+{
+    int note;
+    int velocity;
+};
 
 class Beam
 {
@@ -16,7 +21,7 @@ public:
     ~Beam();
 
     void read_blobs(vector<ofxCvBlob> blobs);
-    void get_midi();
+    vector<Note> get_midi();
 
 private:
     const int beam;

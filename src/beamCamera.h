@@ -18,6 +18,12 @@
 
 
 
+class Hand
+{
+    float x;
+    float y;
+};
+
 
 class BeamCamera
 {
@@ -30,7 +36,8 @@ public:
     void draw_working(int x, int y);
     void draw_masks(int x, int y);
 
-    vector<ofxCvBlob> blobs_for_beam(int beam);
+    vector<Hand> hands_for_beam(int beam);
+
 
     void learn_background();
     void start_learning_beam(int beam);

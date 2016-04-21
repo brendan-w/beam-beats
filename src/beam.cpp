@@ -12,3 +12,15 @@ Beam::~Beam()
 {
 
 }
+
+void Beam::read_blobs(vector<ofxCvBlob> blobs)
+{
+
+	//now that we've processed these, shift them into history
+	old_blobs = blobs;
+}
+
+vector<Note> Beam::get_midi()
+{
+
+}
