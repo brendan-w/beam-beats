@@ -36,11 +36,6 @@ BeamCamera::~BeamCamera()
     grey_working.clear();
     grey_beam_working.clear();
 
-    release_beam_masks();
-}
-
-void BeamCamera::release_beam_masks()
-{
     for(ofxCvGrayscaleImage& mask : beam_masks)
     {
         if(mask.bAllocated)

@@ -35,7 +35,6 @@ public:
 private:
     //funcs --------------------
     void add_to_mask(int beam);
-    void release_beam_masks();
 
     //data --------------------
     const string cam_name;
