@@ -147,7 +147,7 @@ void BeamCamera::stop_learning_beam()
     mask.setImageType(OF_IMAGE_GRAYSCALE);
 
     stringstream filename;
-    filename << cam_name << "/" << learning << ".png";
+    filename << cam_name << "/" << learning << IMAGE_FORMAT;
     mask.save(filename.str());
 
     ofLog() << cam_name << " stopped learning beam " << learning;
@@ -157,7 +157,7 @@ void BeamCamera::stop_learning_beam()
 void BeamCamera::add_to_mask(int beam)
 {
     //this function assumes that we already have a mask allocated
-    if(beam >= (int) beam_masks.size() || !beam_masks[beam].bAllocated)
+    if(!mask_exists(beam))
         return;
 
     cvOr(grey_working.getCvImage(),
@@ -167,10 +167,28 @@ void BeamCamera::add_to_mask(int beam)
     beam_masks[beam].flagImageChanged();
 }
 
+void BeamCamera::compute_min_rect(int beam)
+{
+    if(!mask_exists(beam))
+        return;
+
+    contourFinder.findContours(beam_masks[beam],
+                               BLOB_AREA_MIN,
+                               (WIDTH * HEIGHT), //allow large blobs
+                               1, //ofxOpenCv sorts for the largest blob
+                               false); //find holes
+
+    if(contourFinder.blobs.size() != 1)
+    {
+        ofLog() << "No beam mask detected";
+        return;
+    }
+}
+
 vector<ofxCvBlob> BeamCamera::blobs_for_beam(int beam)
 {
     //return early if there's nothing to process
-    if(beam >= (int) beam_masks.size() || !beam_masks[beam].bAllocated)
+    if(!mask_exists(beam))
         return vector<ofxCvBlob>();
 
     //apply the mask that corresponds to this beam
@@ -180,6 +198,15 @@ vector<ofxCvBlob> BeamCamera::blobs_for_beam(int beam)
     grey_beam_working.flagImageChanged();
 
     //find our hand blobs
-    contourFinder.findContours(grey_beam_working, 100, (WIDTH*HEIGHT)/4, 10, false);
+    contourFinder.findContours(grey_beam_working,
+                               BLOB_AREA_MIN,
+                               BLOB_AREA_MAX,
+                               N_BLOBS,
+                               false); //find holes
     return contourFinder.blobs;
+}
+
+bool BeamCamera::mask_exists(int beam)
+{
+    return (beam < (int)beam_masks.size()) && (beam_masks[beam].bAllocated);
 }

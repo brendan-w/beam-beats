@@ -1,13 +1,22 @@
 #pragma once
 
-#include "ofxXmlSettings.h"
 #include "ofxOpenCv.h"
+
 
 #define WIDTH 320
 #define HEIGHT 240
+
+#define BLOB_AREA_MIN 100
+#define BLOB_AREA_MAX (WIDTH * HEIGHT / 4)
+#define N_BLOBS 10
+
 #define FRAMERATE 60
 #define INIT_THRESHOLD 80
+#define IMAGE_FORMAT ".png"
+
 #define NOT_LEARNING -1
+
+
 
 
 class BeamCamera
@@ -35,6 +44,9 @@ public:
 private:
     //funcs --------------------
     void add_to_mask(int beam);
+    void compute_min_rect(int beam);
+    bool mask_exists(int beam);
+
 
     //data --------------------
     const string cam_name;
@@ -50,8 +62,11 @@ private:
     ofxCvGrayscaleImage grey_beam_working; // working buffer for single-beam masking operations
 
     //masks for differentiating each beam
-    //WANRING: could be a sparse array
+    //WARNING: could be a sparse array, use mask_exists()
     vector<ofxCvGrayscaleImage> beam_masks;
+
+    //minimum area rects defining our beams
+    vector<CvBox2D> beam_rects;
 
     //blob detector
     ofxCvContourFinder contourFinder;
