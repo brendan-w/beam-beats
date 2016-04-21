@@ -1,16 +1,12 @@
 #pragma once
 
 #include "ofMain.h"
+#include "beam.h"
 #include "beamCamera.h"
 #include "ofxMidi.h"
 
-#define sizeof_array(a) (sizeof(a)/sizeof(a[0]))
-
 //UI
 #define THRESHOLD_INCREMENT 2
-
-//BEAM SETTINGS
-const int pentatonic[] = {64, 67, 69, 71, 74, 76};
 
 
 class ofApp : public ofBaseApp{
@@ -43,6 +39,5 @@ class ofApp : public ofBaseApp{
         BeamCamera* cam_right;
         ofxMidiOut midi_out;
 
-        // status for each region of the beam
-        bool beam_regions[sizeof_array(pentatonic)];
+        vector<Beam> beams;
 };
