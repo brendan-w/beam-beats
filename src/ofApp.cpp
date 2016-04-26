@@ -61,15 +61,10 @@ void ofApp::draw()
     cam_left->draw_masks(WIDTH, 0);
     cam_right->draw_masks(WIDTH, HEIGHT);
 
+    vector<Hand> hands;
+    hands = cam_left->hands_for_beam(1);
+
     /*
-    vector<ofxCvBlob> blobs;
-
-    blobs = cam_left->blobs_for_beam(0);
-    for(ofxCvBlob& blob : blobs)
-    {
-        blob.draw(0, 0);
-    }
-
     blobs = cam_right->blobs_for_beam(0);
     for(ofxCvBlob& blob : blobs)
     {

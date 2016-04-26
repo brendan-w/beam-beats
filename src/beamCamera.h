@@ -31,7 +31,7 @@ public:
     void zero();
     void learn();
     void add_to_mask(ofxCvGrayscaleImage partial);
-    Hand blob_to_hand(ofxCvBlob blob);
+    Hand blob_to_hand(ofxCvBlob hand);
 
     ofxCvGrayscaleImage mask;
     ofxCvBlob blob;

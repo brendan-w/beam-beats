@@ -99,6 +99,32 @@ void BeamDescriptor::add_to_mask(ofxCvGrayscaleImage partial)
     mask.flagImageChanged();
 }
 
+Hand BeamDescriptor::blob_to_hand(ofxCvBlob hand)
+{
+    //ofVec3f h = hand.centroid;
+    ofVec3f h(100, 100, 0);
+    ofVec3f a = top - bottom;
+    ofVec3f b = h - bottom;
+
+    float dot = a.dot(b);
+    dot /= a.length();
+
+    ofVec3f intersect = a;
+    intersect.normalize();
+    intersect *= dot;
+    intersect += bottom;
+
+    ofPushStyle();
+    ofFill();
+    ofSetHexColor(0x00FF00);
+    ofDrawCircle(h.x, h.y, 3);
+    ofDrawLine(h.x, h.y, intersect.x, intersect.y);
+    ofPopStyle();
+
+
+    return Hand();
+}
+
 
 
 
@@ -310,6 +336,7 @@ void BeamCamera::stop_learning_beam()
 
 vector<Hand> BeamCamera::hands_for_beam(int beam)
 {
+    vector<Hand> hands;
     //return early if there's nothing to process
     if(!mask_exists(beam))
         return vector<Hand>();
@@ -328,6 +355,19 @@ vector<Hand> BeamCamera::hands_for_beam(int beam)
                                false); //find holes
 
     //contourFinder.blobs is now populated
+
+    hands.push_back(beams[beam]->blob_to_hand(ofxCvBlob()));
+
+    /*
+    for(ofxCvBlob blob : contourFinder.blobs)
+    {
+        hands.push_back(beams[beam]->blob_to_hand(blob));
+    }
+    */
+
+    //TODO: compute velocity
+
+    return hands;
 }
 
 bool BeamCamera::mask_exists(int beam)
