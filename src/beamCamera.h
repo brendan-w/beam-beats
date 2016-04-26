@@ -19,6 +19,8 @@
 #define NOT_LEARNING -1
 
 
+ofPoint rotate_point(ofPoint point, ofPoint center, float angle);
+
 
 class BeamDescriptor
 {
@@ -36,7 +38,6 @@ public:
     ofxCvGrayscaleImage mask;
     ofxCvBlob blob;
 
-private:
     //beam details in pixel coordinates
     ofPoint top;
     ofPoint bottom;

@@ -6,6 +6,32 @@
 
 
 
+
+ofPoint rotate_point(ofPoint point, ofPoint center, float angle)
+{
+    //convert degrees to radians
+    angle = angle * M_PI / 180;
+
+    float s = sin(angle);
+    float c = cos(angle);
+
+    // translate point back to origin:
+    point.x -= center.x;
+    point.y -= center.y;
+
+    // rotate point
+    float xnew = point.x * c - point.y * s;
+    float ynew = point.x * s + point.y * c;
+
+    // translate point back:
+    point.x = xnew + center.x;
+    point.y = ynew + center.y;
+
+    return point;
+}
+
+
+
 BeamDescriptor::BeamDescriptor()
 {
     mask.allocate(WIDTH, HEIGHT);
@@ -40,7 +66,7 @@ void BeamDescriptor::learn()
                                1, //ofxOpenCv sorts for the largest blob
                                false); //find holes
 
-    if(contourFinder.blobs.size() != 1)
+    if(contourFinder.blobs.size() == 0)
     {
         ofLog() << "No beam mask detected";
         blob = ofxCvBlob(); //null blob
@@ -48,6 +74,32 @@ void BeamDescriptor::learn()
     }
 
     blob = contourFinder.blobs[0];
+
+    //compute endpoints of the blob
+
+    const float w = blob.minRect.size.width;
+    const float h = blob.minRect.size.height;
+
+    top.x = bottom.x = blob.minRect.center.x;
+    top.y = bottom.y = blob.minRect.center.y;
+
+    if(h > w)
+    {
+        top.y    = blob.minRect.center.y - (h / 2.0);
+        bottom.y = blob.minRect.center.y + (h / 2.0);
+    }
+    else
+    {
+        top.x    = blob.minRect.center.x + (w / 2.0);
+        bottom.x = blob.minRect.center.x - (w / 2.0);
+    }
+
+    top = rotate_point(top,
+                       ofPoint(blob.minRect.center.x, blob.minRect.center.y),
+                       blob.minRect.angle);
+    bottom = rotate_point(bottom,
+                          ofPoint(blob.minRect.center.x, blob.minRect.center.y),
+                          blob.minRect.angle);
 }
 
 void BeamDescriptor::add_to_mask(ofxCvGrayscaleImage partial)
@@ -160,7 +212,7 @@ void BeamCamera::update()
         //apply our intensity threshold
         grey_working.threshold(threshold);
 
-        if(is_learning())
+        if(is_learning() && beams[learning] != NULL)
         {
             beams[learning]->add_to_mask(grey_working);
         }
@@ -197,7 +249,15 @@ void BeamCamera::draw_masks(int x, int y)
     for(BeamDescriptor* beam : beams)
     {
         if(beam != NULL)
+        {
             beam->blob.draw();
+            ofPushStyle();
+            ofSetHexColor(0xFF0000);
+            ofDrawCircle(beam->top.x, beam->top.y, 3);
+            ofSetHexColor(0x0000FF);
+            ofDrawCircle(beam->bottom.x, beam->bottom.y, 3);
+            ofPopStyle();
+        }
     }
 }
 
