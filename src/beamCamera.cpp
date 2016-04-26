@@ -87,11 +87,13 @@ void BeamDescriptor::learn()
     {
         top.y    = blob.minRect.center.y - (h / 2.0);
         bottom.y = blob.minRect.center.y + (h / 2.0);
+        radius = w / 2.0;
     }
     else
     {
         top.x    = blob.minRect.center.x + (w / 2.0);
         bottom.x = blob.minRect.center.x - (w / 2.0);
+        radius = h / 2.0;
     }
 
     top = rotate_point(top,
