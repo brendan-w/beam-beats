@@ -19,8 +19,6 @@
 #define NOT_LEARNING -1
 
 
-ofPoint rotate_point(ofPoint point, ofPoint center, float angle);
-
 
 class BeamDescriptor
 {
@@ -42,6 +40,9 @@ public:
     ofPoint top;
     ofPoint bottom;
     float radius;
+private:
+    void find_blob();
+    void find_details();
 };
 
 

@@ -1,35 +1,8 @@
 
 #include <cmath>
-
 #include "ofxPS3EyeGrabber.h"
 #include "beamCamera.h"
-
-
-
-
-ofPoint rotate_point(ofPoint point, ofPoint center, float angle)
-{
-    //convert degrees to radians
-    angle = angle * M_PI / 180;
-
-    float s = sin(angle);
-    float c = cos(angle);
-
-    // translate point back to origin:
-    point.x -= center.x;
-    point.y -= center.y;
-
-    // rotate point
-    float xnew = point.x * c - point.y * s;
-    float ynew = point.x * s + point.y * c;
-
-    // translate point back:
-    point.x = xnew + center.x;
-    point.y = ynew + center.y;
-
-    return point;
-}
-
+#include "utils.h"
 
 
 BeamDescriptor::BeamDescriptor()
@@ -59,6 +32,13 @@ void BeamDescriptor::zero()
 
 void BeamDescriptor::learn()
 {
+    find_blob();
+    if(blob.pts.size() > 0)
+        find_details();
+}
+
+void BeamDescriptor::find_blob()
+{
     ofxCvContourFinder contourFinder;
     contourFinder.findContours(mask,
                                BLOB_AREA_MIN,
@@ -74,7 +54,10 @@ void BeamDescriptor::learn()
     }
 
     blob = contourFinder.blobs[0];
+}
 
+void BeamDescriptor::find_details()
+{
     //compute endpoints of the blob
 
     const float w = blob.minRect.size.width;
@@ -83,6 +66,8 @@ void BeamDescriptor::learn()
     top.x = bottom.x = blob.minRect.center.x;
     top.y = bottom.y = blob.minRect.center.y;
 
+    //The rectangle may be specified in any orientation.
+    //Assume that the longer (major) axis is the axis of our beam
     if(h > w)
     {
         top.y    = blob.minRect.center.y - (h / 2.0);
@@ -103,6 +88,7 @@ void BeamDescriptor::learn()
                           ofPoint(blob.minRect.center.x, blob.minRect.center.y),
                           blob.minRect.angle);
 }
+
 
 void BeamDescriptor::add_to_mask(ofxCvGrayscaleImage partial)
 {
