@@ -28,13 +28,15 @@ public:
     BeamDescriptor(ofImage& image);
     ~BeamDescriptor();
 
+    void zero();
     void learn();
+    void add_to_mask(ofxCvGrayscaleImage partial);
     Hand blob_to_hand(ofxCvBlob blob);
 
     ofxCvGrayscaleImage mask;
+    ofxCvBlob blob;
 
 private:
-    ofxCvBlob beam;
     //beam details in pixel coordinates
     ofPoint top;
     ofPoint bottom;
@@ -56,7 +58,6 @@ public:
 
     vector<Hand> hands_for_beam(int beam);
 
-
     void learn_background();
     void start_learning_beam(int beam);
     void stop_learning_beam();
@@ -69,10 +70,9 @@ public:
 private:
     //funcs --------------------
     void load_data();
-    void add_to_mask(int beam);
     void compute_beam_blob(int beam);
     bool mask_exists(int beam);
-    void new_mask(int beam);
+    void new_beam(int beam);
 
     //data --------------------
     const string cam_name;
@@ -89,10 +89,7 @@ private:
 
     //masks for differentiating each beam
     //WARNING: could be a sparse array, use mask_exists()
-    vector<ofxCvGrayscaleImage> beam_masks;
-
-    //minimum area rects defining our beams
-    vector<ofxCvBlob> beam_blobs;
+    vector<BeamDescriptor*> beams;
 
     //vector of previous hand objects, for reporting velocity
     vector<Hand> old_hands;

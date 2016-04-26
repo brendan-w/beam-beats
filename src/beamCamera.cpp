@@ -9,7 +9,7 @@
 BeamDescriptor::BeamDescriptor()
 {
     mask.allocate(WIDTH, HEIGHT);
-    cvZero(mask.getCvImage());
+    zero();
 }
 
 BeamDescriptor::BeamDescriptor(ofImage& image)
@@ -25,6 +25,12 @@ BeamDescriptor::~BeamDescriptor()
     mask.clear();
 }
 
+void BeamDescriptor::zero()
+{
+    cvZero(mask.getCvImage());
+    mask.flagImageChanged();
+}
+
 void BeamDescriptor::learn()
 {
     ofxCvContourFinder contourFinder;
@@ -37,11 +43,20 @@ void BeamDescriptor::learn()
     if(contourFinder.blobs.size() != 1)
     {
         ofLog() << "No beam mask detected";
-        beam = ofxCvBlob(); //null blob
+        blob = ofxCvBlob(); //null blob
         return;
     }
 
-   beam = contourFinder.blobs[0];
+    blob = contourFinder.blobs[0];
+}
+
+void BeamDescriptor::add_to_mask(ofxCvGrayscaleImage partial)
+{
+    cvOr(partial.getCvImage(),
+         mask.getCvImage(),
+         mask.getCvImage());
+
+    mask.flagImageChanged();
 }
 
 
@@ -82,10 +97,48 @@ BeamCamera::~BeamCamera()
     grey_working.clear();
     grey_beam_working.clear();
 
-    for(ofxCvGrayscaleImage& mask : beam_masks)
+    for(BeamDescriptor* beam : beams)
     {
-        if(mask.bAllocated)
-            mask.clear();
+        if(beam != NULL)
+            delete beam;
+    }
+}
+
+void BeamCamera::load_data()
+{
+    ofDirectory dir(cam_name);
+    if(!dir.exists())
+    {
+        dir.create();
+        return;
+    }
+
+    dir.allowExt(IMAGE_FORMAT);
+    dir.listDir();
+
+    for(ofFile file : dir)
+    {
+        ofImage img;
+
+        if(file.getBaseName() == BACKGROUND_FILE)
+        {
+            img.load(file);
+            grey_bg = img;
+        }
+        else
+        {
+            int beam = ofToInt(file.getBaseName());
+
+            if(beam < 0)
+                continue;
+
+            img.load(file);
+            //make sure our mask array has a spot for this beam
+            if(beam >= (int) beams.size())
+                beams.resize(beam + 1, NULL);
+
+            beams[beam] = new BeamDescriptor(img);
+        }
     }
 }
 
@@ -109,7 +162,7 @@ void BeamCamera::update()
 
         if(is_learning())
         {
-            add_to_mask(learning);
+            beams[learning]->add_to_mask(grey_working);
         }
     }
 }
@@ -128,12 +181,12 @@ void BeamCamera::draw_masks(int x, int y)
 {
     cvZero(grey_beam_working.getCvImage());
 
-    for(ofxCvGrayscaleImage& mask : beam_masks)
+    for(BeamDescriptor* beam : beams)
     {
-        if(mask.bAllocated)
+        if(beam != NULL)
         {
-            cvOr(grey_beam_working.getCvImage(),
-                 mask.getCvImage(),
+            cvOr(beam->mask.getCvImage(),
+                 grey_beam_working.getCvImage(),
                  grey_beam_working.getCvImage());
         }
     }
@@ -141,10 +194,10 @@ void BeamCamera::draw_masks(int x, int y)
     grey_beam_working.flagImageChanged();
     grey_beam_working.draw(x, y);
 
-    for(size_t i = 0; i < beam_masks.size(); i++)
+    for(BeamDescriptor* beam : beams)
     {
-        if(beam_masks[i].bAllocated)
-            beam_blobs[i].draw();
+        if(beam != NULL)
+            beam->blob.draw();
     }
 }
 
@@ -181,59 +234,22 @@ bool BeamCamera::is_learning()
     return learning != NOT_LEARNING;
 }
 
-void BeamCamera::load_data()
-{
-    ofDirectory dir(cam_name);
-    if(!dir.exists())
-    {
-        dir.create();
-        return;
-    }
-
-    dir.allowExt(IMAGE_FORMAT);
-    dir.listDir();
-
-    for(ofFile file : dir)
-    {
-        ofImage img;
-
-        if(file.getBaseName() == BACKGROUND_FILE)
-        {
-            img.load(file);
-            grey_bg = img;
-        }
-        else
-        {
-            int beam = ofToInt(file.getBaseName());
-
-            if(beam < 0)
-                continue;
-
-            img.load(file);
-            new_mask(beam);
-            beam_masks[beam] = img;
-            compute_beam_blob(beam);
-        }
-    }
-}
-
 void BeamCamera::start_learning_beam(int beam)
 {
     ofLog() << cam_name << " started learning beam " << beam;
-
-    new_mask(beam);
-
+    new_beam(beam);
     learning = beam;
 }
 
 void BeamCamera::stop_learning_beam()
 {
     //compute and save the minimum area rect
-    compute_beam_blob(learning);
+    BeamDescriptor* beam = beams[learning];
+    beam->learn();
 
     //save the mask to a file
     ofImage mask;
-    mask.setFromPixels(beam_masks[learning].getPixels());
+    mask.setFromPixels(beam->mask.getPixels());
     mask.setImageType(OF_IMAGE_GRAYSCALE);
 
     stringstream filename;
@@ -244,40 +260,6 @@ void BeamCamera::stop_learning_beam()
     learning = NOT_LEARNING;
 }
 
-void BeamCamera::add_to_mask(int beam)
-{
-    //this function assumes that we already have a mask allocated
-    if(!mask_exists(beam))
-        return;
-
-    cvOr(grey_working.getCvImage(),
-         beam_masks[beam].getCvImage(),
-         beam_masks[beam].getCvImage());
-
-    beam_masks[beam].flagImageChanged();
-}
-
-void BeamCamera::compute_beam_blob(int beam)
-{
-    if(!mask_exists(beam))
-        return;
-
-    contourFinder.findContours(beam_masks[beam],
-                               BLOB_AREA_MIN,
-                               (WIDTH * HEIGHT), //allow large blobs
-                               1, //ofxOpenCv sorts for the largest blob
-                               false); //find holes
-
-    if(contourFinder.blobs.size() != 1)
-    {
-        ofLog() << "No beam mask detected";
-        beam_blobs[beam] = ofxCvBlob(); //null blob
-        return;
-    }
-
-    beam_blobs[beam] = contourFinder.blobs[0];
-}
-
 vector<Hand> BeamCamera::hands_for_beam(int beam)
 {
     //return early if there's nothing to process
@@ -286,7 +268,7 @@ vector<Hand> BeamCamera::hands_for_beam(int beam)
 
     //apply the mask that corresponds to this beam
     cvAnd(grey_working.getCvImage(),
-          beam_masks[beam].getCvImage(),
+          beams[beam]->mask.getCvImage(),
           grey_beam_working.getCvImage());
     grey_beam_working.flagImageChanged();
 
@@ -302,23 +284,17 @@ vector<Hand> BeamCamera::hands_for_beam(int beam)
 
 bool BeamCamera::mask_exists(int beam)
 {
-    return (beam < (int)beam_masks.size()) && (beam_masks[beam].bAllocated);
+    return (beam < (int)beams.size()) && (beams[beam] != NULL);
 }
 
-void BeamCamera::new_mask(int beam)
+void BeamCamera::new_beam(int beam)
 {
     //make sure our mask array has a spot for this beam
-    if(beam >= (int) beam_masks.size())
-    {
-        beam_masks.resize(beam + 1);
-        beam_blobs.resize(beam + 1);
-    }
+    if(beam >= (int) beams.size())
+        beams.resize(beam + 1, NULL);
 
-    // if the image exists, reset it
-    if(beam_masks[beam].bAllocated)
-        beam_masks[beam].clear();
-
-    //allocate the new image
-    beam_masks[beam].allocate(WIDTH, HEIGHT);
-    cvZero(beam_masks[beam].getCvImage());
+    if(mask_exists(beam))
+        beams[beam]->zero();
+    else
+        beams[beam] = new BeamDescriptor();
 }
