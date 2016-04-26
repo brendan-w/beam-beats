@@ -10,9 +10,12 @@
 #define BLOB_AREA_MAX (WIDTH * HEIGHT / 4)
 #define N_BLOBS 10
 
+#define SAME_HAND_OFFSET_X 0.1
+#define SAME_HAND_OFFSET_Y 0.05
+
 #define FRAMERATE 60
 #define INIT_THRESHOLD 128
-#define IMAGE_FORMAT ".png"
+#define IMAGE_FORMAT "png"
 
 #define NOT_LEARNING -1
 
@@ -22,6 +25,8 @@ class Hand
 {
     float x;
     float y;
+    float vx;
+    float vy;
 };
 
 
@@ -50,6 +55,8 @@ public:
 
 private:
     //funcs --------------------
+    void load_beam_masks();
+    void new_mask(int beam);
     void add_to_mask(int beam);
     void compute_beam_blob(int beam);
     bool mask_exists(int beam);
@@ -74,6 +81,9 @@ private:
 
     //minimum area rects defining our beams
     vector<ofxCvBlob> beam_blobs;
+
+    //vector of previous hand objects, for reporting velocity
+    vector<Hand> old_hands;
 
     //blob detector
     ofxCvContourFinder contourFinder;

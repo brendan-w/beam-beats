@@ -26,6 +26,8 @@ BeamCamera::BeamCamera(int deviceID, const string name) : cam_name(name)
 
     threshold = INIT_THRESHOLD;
     learning = NOT_LEARNING;
+
+    load_beam_masks();
 }
 
 BeamCamera::~BeamCamera()
@@ -126,24 +128,35 @@ bool BeamCamera::is_learning()
     return learning != NOT_LEARNING;
 }
 
+void BeamCamera::load_beam_masks()
+{
+    ofDirectory dir(cam_name);
+    if(!dir.exists())
+        return;
+
+    dir.allowExt(IMAGE_FORMAT);
+    dir.listDir();
+
+    for(ofFile file : dir)
+    {
+        int beam = ofToInt(file.getBaseName());
+
+        if(beam < 0)
+            continue;
+
+        ofImage mask;
+        mask.load(file);
+        new_mask(beam);
+        beam_masks[beam].setFromPixels(mask.getPixels());
+        compute_beam_blob(beam);
+    }
+}
+
 void BeamCamera::start_learning_beam(int beam)
 {
     ofLog() << cam_name << " started learning beam " << beam;
 
-    //make sure our mask array has a spot for this beam
-    if(beam >= (int) beam_masks.size())
-    {
-        beam_masks.resize(beam + 1);
-        beam_blobs.resize(beam + 1);
-    }
-
-    // if the image exists, reset it
-    if(beam_masks[beam].bAllocated)
-        beam_masks[beam].clear();
-
-    //allocate the new image
-    beam_masks[beam].allocate(WIDTH, HEIGHT);
-    cvZero(beam_masks[beam].getCvImage());
+    new_mask(beam);
 
     learning = beam;
 }
@@ -159,7 +172,7 @@ void BeamCamera::stop_learning_beam()
     mask.setImageType(OF_IMAGE_GRAYSCALE);
 
     stringstream filename;
-    filename << cam_name << "/" << learning << IMAGE_FORMAT;
+    filename << cam_name << "/" << learning << "." << IMAGE_FORMAT;
     mask.save(filename.str());
 
     ofLog() << cam_name << " stopped learning beam " << learning;
@@ -193,6 +206,7 @@ void BeamCamera::compute_beam_blob(int beam)
     if(contourFinder.blobs.size() != 1)
     {
         ofLog() << "No beam mask detected";
+        beam_blobs[beam] = ofxCvBlob(); //null blob
         return;
     }
 
@@ -224,4 +238,22 @@ vector<Hand> BeamCamera::hands_for_beam(int beam)
 bool BeamCamera::mask_exists(int beam)
 {
     return (beam < (int)beam_masks.size()) && (beam_masks[beam].bAllocated);
+}
+
+void BeamCamera::new_mask(int beam)
+{
+    //make sure our mask array has a spot for this beam
+    if(beam >= (int) beam_masks.size())
+    {
+        beam_masks.resize(beam + 1);
+        beam_blobs.resize(beam + 1);
+    }
+
+    // if the image exists, reset it
+    if(beam_masks[beam].bAllocated)
+        beam_masks[beam].clear();
+
+    //allocate the new image
+    beam_masks[beam].allocate(WIDTH, HEIGHT);
+    cvZero(beam_masks[beam].getCvImage());
 }
