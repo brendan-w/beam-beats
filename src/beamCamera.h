@@ -20,6 +20,25 @@
 
 
 
+class BeamDescriptor
+{
+//this class is completely computed from the beam mask
+public:
+    BeamDescriptor(ofxCvGrayscaleImage mask);
+    Hand blob_to_hand(ofxCvBlob blob);
+
+    const ofxCvGrayscaleImage mask;
+
+private:
+    const ofxCvBlob beam;
+    //beam details in pixel coordinates
+    const ofPoint top;
+    const ofPoint bottom;
+    const float radius;
+};
+
+
+
 class BeamCamera
 {
 public:
