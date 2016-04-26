@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofxOpenCv.h"
+#include "hand.h"
 
 
 #define WIDTH 320
@@ -10,24 +11,12 @@
 #define BLOB_AREA_MAX (WIDTH * HEIGHT / 4)
 #define N_BLOBS 10
 
-#define SAME_HAND_OFFSET_X 0.1
-#define SAME_HAND_OFFSET_Y 0.05
-
 #define FRAMERATE 60
 #define INIT_THRESHOLD 128
 #define IMAGE_FORMAT "png"
 
 #define NOT_LEARNING -1
 
-
-
-class Hand
-{
-    float x;
-    float y;
-    float vx;
-    float vy;
-};
 
 
 class BeamCamera
@@ -56,10 +45,10 @@ public:
 private:
     //funcs --------------------
     void load_beam_masks();
-    void new_mask(int beam);
     void add_to_mask(int beam);
     void compute_beam_blob(int beam);
     bool mask_exists(int beam);
+    void new_mask(int beam);
 
 
     //data --------------------
