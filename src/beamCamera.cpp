@@ -5,6 +5,50 @@
 #include "beamCamera.h"
 
 
+
+BeamDescriptor::BeamDescriptor()
+{
+    mask.allocate(WIDTH, HEIGHT);
+    cvZero(mask.getCvImage());
+}
+
+BeamDescriptor::BeamDescriptor(ofImage& image)
+{
+    //learn from an existing image (saved beam mask)
+    mask.allocate(WIDTH, HEIGHT);
+    mask = image;
+    learn();
+}
+
+BeamDescriptor::~BeamDescriptor()
+{
+    mask.clear();
+}
+
+void BeamDescriptor::learn()
+{
+    ofxCvContourFinder contourFinder;
+    contourFinder.findContours(mask,
+                               BLOB_AREA_MIN,
+                               (WIDTH * HEIGHT), //allow large blobs
+                               1, //ofxOpenCv sorts for the largest blob
+                               false); //find holes
+
+    if(contourFinder.blobs.size() != 1)
+    {
+        ofLog() << "No beam mask detected";
+        beam = ofxCvBlob(); //null blob
+        return;
+    }
+
+   beam = contourFinder.blobs[0];
+}
+
+
+
+
+
+
 BeamCamera::BeamCamera(int deviceID, const string name) : cam_name(name)
 {
     grabber.setGrabber(std::make_shared<ofxPS3EyeGrabber>());
@@ -156,8 +200,7 @@ void BeamCamera::load_data()
         if(file.getBaseName() == BACKGROUND_FILE)
         {
             img.load(file);
-            grey_bg.setFromPixels(img.getPixels());
-            grey_bg.flagImageChanged();
+            grey_bg = img;
         }
         else
         {
@@ -168,8 +211,7 @@ void BeamCamera::load_data()
 
             img.load(file);
             new_mask(beam);
-            beam_masks[beam].setFromPixels(img.getPixels());
-            beam_masks[beam].flagImageChanged();
+            beam_masks[beam] = img;
             compute_beam_blob(beam);
         }
     }

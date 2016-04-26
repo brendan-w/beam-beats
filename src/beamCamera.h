@@ -24,17 +24,21 @@ class BeamDescriptor
 {
 //this class is completely computed from the beam mask
 public:
-    BeamDescriptor(ofxCvGrayscaleImage mask);
+    BeamDescriptor();
+    BeamDescriptor(ofImage& image);
+    ~BeamDescriptor();
+
+    void learn();
     Hand blob_to_hand(ofxCvBlob blob);
 
-    const ofxCvGrayscaleImage mask;
+    ofxCvGrayscaleImage mask;
 
 private:
-    const ofxCvBlob beam;
+    ofxCvBlob beam;
     //beam details in pixel coordinates
-    const ofPoint top;
-    const ofPoint bottom;
-    const float radius;
+    ofPoint top;
+    ofPoint bottom;
+    float radius;
 };
 
 
