@@ -27,7 +27,7 @@ BeamCamera::BeamCamera(int deviceID, const string name) : cam_name(name)
     threshold = INIT_THRESHOLD;
     learning = NOT_LEARNING;
 
-    load_beam_masks();
+    load_data();
 }
 
 BeamCamera::~BeamCamera()
@@ -121,6 +121,15 @@ void BeamCamera::adjust_threshold(int delta)
 void BeamCamera::learn_background()
 {
     grey_bg = raw;
+
+    //save the background to a file
+    ofImage background;
+    background.setFromPixels(grey_bg.getPixels());
+    background.setImageType(OF_IMAGE_GRAYSCALE);
+
+    stringstream filename;
+    filename << cam_name << "/" << BACKGROUND_FILE << "." << IMAGE_FORMAT;
+    background.save(filename.str());
 }
 
 bool BeamCamera::is_learning()
@@ -128,27 +137,41 @@ bool BeamCamera::is_learning()
     return learning != NOT_LEARNING;
 }
 
-void BeamCamera::load_beam_masks()
+void BeamCamera::load_data()
 {
     ofDirectory dir(cam_name);
     if(!dir.exists())
+    {
+        dir.create();
         return;
+    }
 
     dir.allowExt(IMAGE_FORMAT);
     dir.listDir();
 
     for(ofFile file : dir)
     {
-        int beam = ofToInt(file.getBaseName());
+        ofImage img;
 
-        if(beam < 0)
-            continue;
+        if(file.getBaseName() == BACKGROUND_FILE)
+        {
+            img.load(file);
+            grey_bg.setFromPixels(img.getPixels());
+            grey_bg.flagImageChanged();
+        }
+        else
+        {
+            int beam = ofToInt(file.getBaseName());
 
-        ofImage mask;
-        mask.load(file);
-        new_mask(beam);
-        beam_masks[beam].setFromPixels(mask.getPixels());
-        compute_beam_blob(beam);
+            if(beam < 0)
+                continue;
+
+            img.load(file);
+            new_mask(beam);
+            beam_masks[beam].setFromPixels(img.getPixels());
+            beam_masks[beam].flagImageChanged();
+            compute_beam_blob(beam);
+        }
     }
 }
 

@@ -13,6 +13,7 @@
 
 #define FRAMERATE 60
 #define INIT_THRESHOLD 128
+#define BACKGROUND_FILE "background"
 #define IMAGE_FORMAT "png"
 
 #define NOT_LEARNING -1
@@ -44,12 +45,11 @@ public:
 
 private:
     //funcs --------------------
-    void load_beam_masks();
+    void load_data();
     void add_to_mask(int beam);
     void compute_beam_blob(int beam);
     bool mask_exists(int beam);
     void new_mask(int beam);
-
 
     //data --------------------
     const string cam_name;
