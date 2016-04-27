@@ -15,14 +15,14 @@ class Hand
 public:
     ofPoint pos; //beam-normalized position
     ofPoint vel;
-    ofPoint pixel_intersection; //location of the hand in the center of the beam
+    ofPoint intersection; //perpedicular intersection with the center of the beam
     ofxCvBlob blob;
 
     Hand() { };
-    Hand(ofPoint _pos, ofPoint _pixel_intersection, ofxCvBlob _blob)
+    Hand(ofPoint _pos, ofPoint _intersection, ofxCvBlob _blob)
     {
         pos = _pos;
-        pixel_intersection = _pixel_intersection;
+        intersection = _intersection;
         blob = _blob;
     };
 
@@ -35,5 +35,16 @@ public:
     {
         return (abs(pos.x - other.pos.x) <= HAND_MAX_VX &&
                 abs(pos.y - other.pos.y) <= HAND_MAX_VY);
+    };
+
+    void draw(int x, int y)
+    {
+        ofPushStyle();
+        ofFill();
+        ofSetHexColor(0x00FF00);
+        ofDrawCircle(blob.centroid.x, blob.centroid.y, 3);
+        ofDrawLine(blob.centroid.x, blob.centroid.y,
+                   intersection.x, intersection.y);
+        ofPopStyle();
     };
 };
