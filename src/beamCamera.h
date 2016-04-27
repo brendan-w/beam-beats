@@ -51,7 +51,7 @@ private:
     ofxCvGrayscaleImage grey_beam_working; // working buffer for single-beam masking operations
 
     //masks for differentiating each beam
-    //WARNING: could be a sparse array, use mask_exists()
+    //WARNING: sparse array, use mask_exists()
     vector<BeamDescriptor*> beams;
 
     //vector of previous hand objects, for reporting velocity

@@ -1,7 +1,7 @@
 
 #include "ofApp.h"
 #include "ofxPS3EyeGrabber.h"
-
+#include "settings.h"
 
 
 //--------------------------------------------------------------

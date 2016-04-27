@@ -5,9 +5,6 @@
 #include "beamCamera.h"
 #include "ofxMidi.h"
 
-//UI
-#define THRESHOLD_INCREMENT 2
-
 
 class ofApp : public ofBaseApp{
 	public:

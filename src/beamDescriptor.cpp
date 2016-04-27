@@ -117,8 +117,6 @@ Hand BeamDescriptor::blob_to_hand(ofxCvBlob blob)
 
     Hand hand(beam_pos, intersection, blob);
 
-    hand.draw(0, 0);
-
     return hand;
 }
 

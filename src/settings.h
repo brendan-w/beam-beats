@@ -1,6 +1,7 @@
 
 #pragma once
 
+
 #define WIDTH 320
 #define HEIGHT 240
 
@@ -12,4 +13,7 @@
 #define INIT_THRESHOLD 128
 #define BACKGROUND_FILE "background"
 #define IMAGE_FORMAT "png"
+
+//UI
+#define THRESHOLD_INCREMENT 2
 
