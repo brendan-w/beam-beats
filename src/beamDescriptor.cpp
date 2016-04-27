@@ -97,9 +97,9 @@ void BeamDescriptor::add_to_mask(ofxCvGrayscaleImage partial)
     mask.flagImageChanged();
 }
 
-Hand BeamDescriptor::blob_to_hand(ofxCvBlob hand)
+Hand BeamDescriptor::blob_to_hand(ofxCvBlob blob)
 {
-    //ofVec3f h = hand.centroid;
+    //ofVec3f h = blob.centroid;
     ofPoint h(100, 100, 0);
     ofPoint a = top - bottom;
     ofPoint b = h - bottom;
@@ -115,7 +115,7 @@ Hand BeamDescriptor::blob_to_hand(ofxCvBlob hand)
     beam_pos.x = (h - intersection).length() / (width / 2.0);
     beam_pos.y = (intersection - bottom).length() / height;
 
-    Hand output(beam_pos, hand.centroid, intersection);
+    Hand output(beam_pos, intersection, blob);
 
     ofPushStyle();
     ofFill();

@@ -232,16 +232,24 @@ vector<Hand> BeamCamera::hands_for_beam(int beam)
 
     //contourFinder.blobs is now populated
 
-    hands.push_back(beams[beam]->blob_to_hand(ofxCvBlob()));
-
-    /*
     for(ofxCvBlob blob : contourFinder.blobs)
     {
-        hands.push_back(beams[beam]->blob_to_hand(blob));
-    }
-    */
+        Hand hand = beams[beam]->blob_to_hand(blob);
 
-    //TODO: compute velocity
+        //figure out where this hand was in the past
+        for(Hand& old_hand : old_hands)
+        {
+            if(hand.same_hand_as(old_hand))
+            {
+                hand.compute_velocity(old_hand);
+                break;
+            }
+        }
+
+        hands.push_back(hand);
+    }
+
+    old_hands = hands;
 
     return hands;
 }

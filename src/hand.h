@@ -2,6 +2,7 @@
 #pragma once
 
 #include <math.h>
+#include <ofxOpenCv.h>
 #include <ofPoint.h>
 
 //sane bounds for how fast a hand can travel
@@ -12,17 +13,17 @@
 class Hand
 {
 public:
-    ofPoint pos;
+    ofPoint pos; //beam-normalized position
     ofPoint vel;
-    ofPoint pixel_pos; //location of the hand in the cameras frame
     ofPoint pixel_intersection; //location of the hand in the center of the beam
+    ofxCvBlob blob;
 
     Hand() { };
-    Hand(ofPoint _pos, ofPoint _pixel_pos, ofPoint _pixel_intersection)
+    Hand(ofPoint _pos, ofPoint _pixel_intersection, ofxCvBlob _blob)
     {
         pos = _pos;
-        pixel_pos = _pixel_pos;
         pixel_intersection = _pixel_intersection;
+        blob = _blob;
     };
 
     void compute_velocity(Hand& old_hand)
