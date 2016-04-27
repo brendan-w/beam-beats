@@ -1,50 +1,10 @@
 #pragma once
 
 #include "ofxOpenCv.h"
+#include "beamDescriptor.h"
 #include "hand.h"
 
-
-#define WIDTH 320
-#define HEIGHT 240
-
-#define BLOB_AREA_MIN 100
-#define BLOB_AREA_MAX (WIDTH * HEIGHT / 4)
-#define N_BLOBS 10
-
-#define FRAMERATE 60
-#define INIT_THRESHOLD 128
-#define BACKGROUND_FILE "background"
-#define IMAGE_FORMAT "png"
-
 #define NOT_LEARNING -1
-
-
-
-class BeamDescriptor
-{
-//this class is completely computed from the beam mask
-public:
-    BeamDescriptor();
-    BeamDescriptor(ofImage& image);
-    ~BeamDescriptor();
-
-    void zero();
-    void learn();
-    void add_to_mask(ofxCvGrayscaleImage partial);
-    Hand blob_to_hand(ofxCvBlob hand);
-
-    ofxCvGrayscaleImage mask;
-    ofxCvBlob blob;
-
-    //beam details in pixel coordinates
-    ofPoint top;
-    ofPoint bottom;
-    float width; //may differ from blob due to angle
-    float height;
-private:
-    void find_blob();
-    void find_details();
-};
 
 
 
