@@ -59,26 +59,27 @@ void BeamDescriptor::find_blob()
 void BeamDescriptor::find_details()
 {
     //compute endpoints of the blob
-
-    const float w = blob.minRect.size.width;
-    const float h = blob.minRect.size.height;
-
+    width = blob.minRect.size.width;
+    height = blob.minRect.size.height;
     top.x = bottom.x = blob.minRect.center.x;
     top.y = bottom.y = blob.minRect.center.y;
 
     //The rectangle may be specified in any orientation.
     //Assume that the longer (major) axis is the axis of our beam
-    if(h > w)
+    if(height > width)
     {
-        top.y    = blob.minRect.center.y - (h / 2.0);
-        bottom.y = blob.minRect.center.y + (h / 2.0);
-        radius = w / 2.0;
+        top.y    = blob.minRect.center.y - (height / 2.0);
+        bottom.y = blob.minRect.center.y + (height / 2.0);
     }
-    else
+    else //width vs. height are backwards
     {
-        top.x    = blob.minRect.center.x + (w / 2.0);
-        bottom.x = blob.minRect.center.x - (w / 2.0);
-        radius = h / 2.0;
+        top.x    = blob.minRect.center.x + (width / 2.0);
+        bottom.x = blob.minRect.center.x - (width / 2.0);
+
+        //swap, to make it semantic
+        float tmp = width;
+        width = height;
+        height = tmp;
     }
 
     top = rotate_point(top,
@@ -102,25 +103,30 @@ void BeamDescriptor::add_to_mask(ofxCvGrayscaleImage partial)
 Hand BeamDescriptor::blob_to_hand(ofxCvBlob hand)
 {
     //ofVec3f h = hand.centroid;
-    ofVec3f h(100, 100, 0);
-    ofVec3f a = top - bottom;
-    ofVec3f b = h - bottom;
+    ofPoint h(100, 100, 0);
+    ofPoint a = top - bottom;
+    ofPoint b = h - bottom;
 
-    float dot = a.dot(b);
-    dot /= a.length();
+    ofPoint intersection = a;
+    intersection.normalize();
+    intersection *= intersection.dot(b);;
+    intersection += bottom;
 
-    ofVec3f intersect = a;
-    intersect.normalize();
-    intersect *= dot;
-    intersect += bottom;
+    //compute the beam-normalized hand value
+    ofPoint beam_pos;
+    beam_pos.x = (h - intersection).length() / (width / 2.0);
+    beam_pos.y = (intersection - bottom).length() / height;
+
+    Hand output(beam_pos, hand.centroid, intersection);
+
+    //"a" is now the pixel location of the perpedicular intersection
 
     ofPushStyle();
     ofFill();
     ofSetHexColor(0x00FF00);
     ofDrawCircle(h.x, h.y, 3);
-    ofDrawLine(h.x, h.y, intersect.x, intersect.y);
+    ofDrawLine(h.x, h.y, intersection.x, intersection.y);
     ofPopStyle();
-
 
     return Hand();
 }

@@ -39,7 +39,8 @@ public:
     //beam details in pixel coordinates
     ofPoint top;
     ofPoint bottom;
-    float radius;
+    float width; //may differ from blob due to angle
+    float height;
 private:
     void find_blob();
     void find_details();
