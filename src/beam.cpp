@@ -54,14 +54,14 @@ void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
 
 size_t Beam::hand_to_region(Hand& hand)
 {
-    return (size_t) floor(ofLerp(0, sizeof_array(midi_scale) + 1, hand.pos.y));
+    size_t r = floor(ofLerp(0, sizeof_array(midi_scale), hand.pos.y));
+    return (r == sizeof_array(midi_scale)) ? (r - 1) : r;
 }
 
 int Beam::region_to_note(size_t region)
 {
     return base_note + midi_scale[region];
 }
-
 
 size_t Beam::speed_to_midi_velocity(float speed)
 {
