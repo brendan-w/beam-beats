@@ -100,7 +100,6 @@ void BeamDescriptor::add_to_mask(ofxCvGrayscaleImage partial)
 Hand BeamDescriptor::blob_to_hand(ofxCvBlob blob)
 {
     ofPoint h = blob.centroid;
-    //ofPoint h(100, 100, 0);
     ofPoint a = top - bottom;
     ofPoint b = h - bottom;
 
