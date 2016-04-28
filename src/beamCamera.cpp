@@ -212,7 +212,9 @@ void BeamCamera::stop_learning_beam()
 
 vector<Hand> BeamCamera::hands_for_beam(int beam)
 {
-    vector<Hand> hands;
+    vector<Hand> all_hands;
+    vector<Hand> hands_with_velocity;
+
     //return empty array if this camera doesn't handle a beam
     if(!mask_exists(beam))
         return vector<Hand>();
@@ -237,21 +239,22 @@ vector<Hand> BeamCamera::hands_for_beam(int beam)
         Hand hand = beams[beam]->blob_to_hand(blob);
 
         //figure out where this hand was in the past
-        for(Hand& old_hand : old_hands)
+        for(Hand& old_hand : beams[beam]->old_hands)
         {
             if(hand.same_hand_as(old_hand))
             {
                 hand.compute_velocity(old_hand);
+                hands_with_velocity.push_back(hand);
                 break;
             }
         }
 
-        hands.push_back(hand);
+        all_hands.push_back(hand);
     }
 
-    old_hands = hands;
+    beams[beam]->old_hands = all_hands;
 
-    return hands;
+    return hands_with_velocity;
 }
 
 bool BeamCamera::mask_exists(int beam)

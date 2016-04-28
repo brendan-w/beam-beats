@@ -26,6 +26,11 @@ public:
     ofPoint bottom;
     float width; //may differ from blob due to angle
     float height;
+
+    //not really the perfect place for this,
+    //stores hand positions from the last frame
+    //for velocity computations
+    vector<Hand> old_hands;
 private:
     void find_blob();
     void find_details();

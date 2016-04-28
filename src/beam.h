@@ -12,6 +12,15 @@ const int midi_velocities[] = { 32, 64, 96, 127 };
 const int midi_scale[] = { 0, 3, 5, 7, 10, 12 }; //pentatonic
 
 
+class BeamRegion
+{
+public:
+    bool status = false;
+    Hand entrance;
+    Hand exit;
+};
+
+
 class Beam
 {
 public:

@@ -54,9 +54,6 @@ private:
     //WARNING: sparse array, use mask_exists()
     vector<BeamDescriptor*> beams;
 
-    //vector of previous hand objects, for reporting velocity
-    vector<Hand> old_hands;
-
     //blob detector
     ofxCvContourFinder contourFinder;
 };
