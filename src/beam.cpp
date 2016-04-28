@@ -5,40 +5,41 @@
 
 Beam::Beam(int channel, int base_note) : channel(channel), base_note(base_note)
 {
-    //zero out our note status array
-    for(size_t r = 0; r < sizeof_array(midi_scale); r++)
-    {
-        regions[r] = false;
-    }
+
 }
 
 void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
 {
-    bool current_regions[sizeof_array(midi_scale)] = { false };
-    float current_speeds[sizeof_array(midi_scale)] = { 0.0 };
+    uint64_t frame = ofGetFrameNum();
+    BeamRegion current[sizeof_array(midi_scale)];
 
+    //sort hands into their respective regions
     for(Hand& hand : hands)
     {
         size_t r = hand_to_region(hand);
         //mark that there is a hand in this region
-        current_regions[r] = true;
+        current[r].status = true;
+        current[r].time = frame;
         //fastest hand dominates
-        current_speeds[r] = max(hand.speed(), current_speeds[r]);
+        if(hand.speed() > current[r].hand.speed())
+            current[r].hand = hand;
     }
 
+    //check the current region status against the current status,
+    //to determine whether to send note ON or OFF
     for(size_t r = 0; r < sizeof_array(midi_scale); r++)
     {
         int note = region_to_note(r);
-        int vel = speed_to_midi_velocity(current_speeds[r]);
+        int vel = speed_to_midi_velocity(current[r].hand.speed());
 
-        //if the hand is new, and it has non-zero speed
-        if(current_regions[r] && !regions[r])
+        //if the hand is new
+        if(current[r].status && !regions[r].status)
         {
             //NOTE ON
             ofLog() << "ON " << note << " : " << vel;
             midi_out.sendNoteOn(1, note, vel);
         }
-        else if(!current_regions[r] && regions[r])
+        else if(!current[r].status && regions[r].status)
         {
             //a hand just LEFT a region
             //NOTE OFF
@@ -47,7 +48,7 @@ void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
         }
 
         //walk the buffers
-        regions[r] = current_regions[r];
+        regions[r] = current[r];
     }
 }
 

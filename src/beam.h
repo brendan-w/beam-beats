@@ -16,8 +16,8 @@ class BeamRegion
 {
 public:
     bool status = false;
-    Hand entrance;
-    Hand exit;
+    uint64_t time;
+    Hand hand;
 };
 
 
@@ -32,7 +32,7 @@ private:
     const int base_note;
 
     //table of region statuses
-    bool regions[sizeof_array(midi_scale)];
+    BeamRegion regions[sizeof_array(midi_scale)];
 
     size_t hand_to_region(Hand& hand);
     int region_to_note(size_t region);
