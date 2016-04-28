@@ -5,16 +5,7 @@
 
 Beam::Beam(int channel, int base_note) : channel(channel), base_note(base_note)
 {
-    //zero out our smoothing array
-    /*
-    for(int hist = 0; hist < SMOOTHING; hist++)
-    {
-        for(int region = 0; region < sizeof_array(midi_scale); region++)
-        {
-            region_speeds[hist][region] = 0.0;
-        }
-    }
-    */
+    //zero out our note status array
     for(size_t r = 0; r < sizeof_array(midi_scale); r++)
     {
         regions[r] = false;
