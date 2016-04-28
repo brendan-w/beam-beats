@@ -70,6 +70,7 @@ void ofApp::draw()
         for(size_t b = 0; b < beams.size(); b++)
         {
             vector<Hand> hands = camera->hands_for_beam(b);
+            beams[b].update(hands, midi_out); //parse hands, and send MIDI
 
             //draw the hand on screen
             for(Hand& hand : hands)

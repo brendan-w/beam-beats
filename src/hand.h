@@ -37,6 +37,8 @@ public:
                 abs(pos.y - other.pos.y) <= HAND_MAX_VY);
     };
 
+    float speed() { return vel.length(); }
+
     void draw(int x, int y)
     {
         ofPushStyle();

@@ -2,6 +2,7 @@
 #pragma once
 
 #include "ofxOpenCv.h" //ofxCvBlob
+#include "ofxMidi.h"
 #include "settings.h"
 #include "hand.h"
 
@@ -10,23 +11,21 @@
 const int midi_velocities[] = { 32, 64, 96, 128 };
 const int midi_scale[] = { 0, 3, 5, 7, 10, 12 }; //pentatonic
 
-class Note
-{
-    int note;
-    int channel;
-    int velocity;
-};
 
 class Beam
 {
 public:
-    Beam(int channel, int octave);
-    vector<Note> update(vector<Hand> hands);
+    Beam(int channel, int base_note);
+    void update(vector<Hand> hands, ofxMidiOut& midi_out);
 
 private:
     const int channel;
-    const int octave;
+    const int base_note;
 
-    //blobs from the previous frame, for velocity purposes
-    bool notes[sizeof_array(midi_scale)];
+    //table of region statuses
+    bool regions[sizeof_array(midi_scale)];
+
+    size_t hand_to_region(Hand& hand);
+    int region_to_note(size_t region);
+    size_t speed_to_midi_velocity(float speed);
 };

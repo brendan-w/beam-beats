@@ -10,6 +10,7 @@
 #define N_BLOBS 10
 
 #define FRAMERATE 60
+#define SMOOTHING 3
 #define INIT_THRESHOLD 128
 #define BACKGROUND_FILE "background"
 #define IMAGE_FORMAT "png"
