@@ -28,13 +28,12 @@ class ofApp : public ofBaseApp{
     private:
         //funcs ---------------------
         void list_devices();
-        void stop_learning_beams();
+        void stop_learning();
 
         //data ----------------------
         bool show_raw;
-        BeamCamera* cam_left;
-        BeamCamera* cam_right;
         ofxMidiOut midi_out;
 
+        vector<BeamCamera*> cameras;
         vector<Beam> beams;
 };

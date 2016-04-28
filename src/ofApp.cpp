@@ -7,8 +7,8 @@
 //--------------------------------------------------------------
 ofApp::~ofApp()
 {
-    delete cam_left;
-    delete cam_right;
+    for(BeamCamera* camera : cameras)
+        delete camera;
 }
 
 //--------------------------------------------------------------
@@ -17,8 +17,15 @@ void ofApp::setup()
     show_raw = false;
     list_devices();
 
-    cam_left = new BeamCamera(0, "left");
-    cam_right = new BeamCamera(1, "right");
+    //construct our 4 beams
+    beams.push_back(Beam(1, 4)); //channel, octave
+    beams.push_back(Beam(2, 4));
+    beams.push_back(Beam(3, 4));
+    beams.push_back(Beam(4, 4));
+
+    cameras.push_back(new BeamCamera(0, "left"));
+    cameras.push_back(new BeamCamera(1, "right"));
+
     midi_out.openPort(1);
 }
 
@@ -37,8 +44,8 @@ void ofApp::list_devices()
 //--------------------------------------------------------------
 void ofApp::update()
 {
-    cam_left->update();
-    cam_right->update();
+    for(BeamCamera* camera : cameras)
+        camera->update();
 }
 
 //--------------------------------------------------------------
@@ -47,35 +54,34 @@ void ofApp::draw()
     ofBackground(0);
     ofSetColor(255);
 
-    if(show_raw)
+    for(size_t i = 0; i < cameras.size(); i++)
     {
-        cam_left->draw_raw(0, 0);
-        cam_right->draw_raw(0, HEIGHT);
-    }
-    else
-    {
-        cam_left->draw_working(0, 0);
-        cam_right->draw_working(0, HEIGHT);
-    }
+        BeamCamera* camera = cameras[i];
+        int row = HEIGHT * i;
 
-    cam_left->draw_masks(WIDTH, 0);
-    cam_right->draw_masks(WIDTH, HEIGHT);
+        if(show_raw)
+            camera->draw_raw(0, row);
+        else
+            camera->draw_working(0, row);
 
-    vector<Hand> hands;
-    hands = cam_left->hands_for_beam(1);
+        camera->draw_masks(WIDTH, row);
 
-    /*
-    blobs = cam_right->blobs_for_beam(0);
-    for(ofxCvBlob& blob : blobs)
-    {
-        blob.draw(0, HEIGHT);
+        //iterate over beams
+        for(size_t b = 0; b < beams.size(); b++)
+        {
+            vector<Hand> hands = camera->hands_for_beam(b);
+
+            //draw the hand on screen
+            for(Hand& hand : hands)
+            {
+                hand.draw(0, row);
+            }
+        }
     }
-    */
 
     ofSetHexColor(0xffffff);
     stringstream t;
     t << "FPS: " << ofGetFrameRate();
-
     ofDrawBitmapString(t.str(), 20, 20);
 }
 
@@ -85,22 +91,22 @@ void ofApp::keyPressed(int key)
     switch(key)
     {
         case ' ':
-            cam_left->learn_background();
-            cam_right->learn_background();
+            for(BeamCamera* camera : cameras)
+                camera->learn_background();
             break;
         case OF_KEY_TAB:
             show_raw = !show_raw;
             break;
         case OF_KEY_RETURN:
-            stop_learning_beams();
+            stop_learning();
             break;
         case OF_KEY_UP:
-            cam_left->adjust_threshold(THRESHOLD_INCREMENT);
-            cam_right->adjust_threshold(THRESHOLD_INCREMENT);
+            for(BeamCamera* camera : cameras)
+                camera->adjust_threshold(THRESHOLD_INCREMENT);
             break;
         case OF_KEY_DOWN:
-            cam_left->adjust_threshold(-THRESHOLD_INCREMENT);
-            cam_right->adjust_threshold(-THRESHOLD_INCREMENT);
+            for(BeamCamera* camera : cameras)
+                camera->adjust_threshold(-THRESHOLD_INCREMENT);
             break;
 
         default:
@@ -109,20 +115,22 @@ void ofApp::keyPressed(int key)
             {
                 int beam = key - '1';
 
-                stop_learning_beams(); //stop learning any previous beams
+                stop_learning(); //stop learning any previous beams
 
-                if(!cam_left->is_learning())
-                    cam_left->start_learning_beam(beam);
-                if(!cam_right->is_learning())
-                    cam_right->start_learning_beam(beam);
+                for(BeamCamera* camera : cameras)
+                {
+                    if(!camera->is_learning())
+                        camera->start_learning_beam(beam);
+                }
             }
     }
 }
 
-void ofApp::stop_learning_beams()
+void ofApp::stop_learning()
 {
-    if(cam_left->is_learning())
-        cam_left->stop_learning_beam();
-    if(cam_right->is_learning())
-        cam_right->stop_learning_beam();
+    for(BeamCamera* camera : cameras)
+    {
+        if(!camera->is_learning())
+            camera->stop_learning_beam();
+    }
 }

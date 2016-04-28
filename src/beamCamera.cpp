@@ -213,7 +213,7 @@ void BeamCamera::stop_learning_beam()
 vector<Hand> BeamCamera::hands_for_beam(int beam)
 {
     vector<Hand> hands;
-    //return early if there's nothing to process
+    //return empty array if this camera doesn't handle a beam
     if(!mask_exists(beam))
         return vector<Hand>();
 

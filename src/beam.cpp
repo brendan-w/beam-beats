@@ -3,24 +3,14 @@
 #include "beam.h"
 
 
-Beam::Beam(int beam, int octave) : beam(beam), octave(octave)
+Beam::Beam(int channel, int octave) : channel(channel), octave(octave)
 {
-
+    //zero out our notes
+    for(bool& note : notes)
+        note = false;
 }
 
-Beam::~Beam()
-{
-
-}
-
-void Beam::read_blobs(vector<ofxCvBlob> blobs)
-{
-
-	//now that we've processed these, shift them into history
-	old_blobs = blobs;
-}
-
-vector<Note> Beam::get_midi()
+vector<Note> Beam::update(vector<Hand> hands)
 {
 
 }
