@@ -35,12 +35,14 @@ void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
         if(current_regions[r] && !regions[r])
         {
             //NOTE ON
+            ofLog() << "ON " << note << " : " << vel;
             midi_out.sendNoteOn(1, note, vel);
         }
         else if(!current_regions[r] && regions[r])
         {
             //a hand just LEFT a region
             //NOTE OFF
+            ofLog() << "OFF " << note << " : " << vel;
             midi_out.sendNoteOff(1, note, 64);
         }
 
@@ -62,6 +64,6 @@ int Beam::region_to_note(size_t region)
 
 size_t Beam::speed_to_midi_velocity(float speed)
 {
-    return midi_velocities[0]; //TODO
+    return midi_velocities[3]; //TODO
 }
 

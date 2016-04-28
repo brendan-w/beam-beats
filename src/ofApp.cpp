@@ -18,13 +18,13 @@ void ofApp::setup()
     list_devices();
 
     //construct our 4 beams
-    beams.push_back(Beam(1, 4)); //channel, octave
-    beams.push_back(Beam(2, 4));
-    beams.push_back(Beam(3, 4));
-    beams.push_back(Beam(4, 4));
+    beams.push_back(Beam(1, 64)); //channel, octave
+    beams.push_back(Beam(2, 64));
+    beams.push_back(Beam(3, 64));
+    beams.push_back(Beam(4, 64));
 
     cameras.push_back(new BeamCamera(0, "left"));
-    cameras.push_back(new BeamCamera(1, "right"));
+    //cameras.push_back(new BeamCamera(1, "right"));
 
     midi_out.openPort(1);
 }
