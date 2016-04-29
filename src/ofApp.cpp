@@ -103,7 +103,8 @@ void ofApp::draw()
 
     ofSetHexColor(0xffffff);
     stringstream t;
-    t << "FPS: " << ofGetFrameRate();
+    t << "FPS: " << ofGetFrameRate() << endl;
+    t << "THRESH: " << cameras[0]->get_threshold() << endl;
     ofDrawBitmapString(t.str(), 20, 20);
 }
 
