@@ -112,11 +112,19 @@ Hand BeamDescriptor::blob_to_hand(ofxCvBlob blob)
     //compute the beam-normalized hand value
     ofPoint beam_pos;
     beam_pos.x = (h - intersection).length() / (width / 2.0);
+    beam_pos.x *= left_or_right(h);
     beam_pos.y = (intersection - bottom).length() / height;
 
     Hand hand(beam_pos, intersection, blob);
 
     return hand;
+}
+
+float BeamDescriptor::left_or_right(ofPoint p)
+{
+    float determinant = (top.x - bottom.x) * (p.y - bottom.y) -
+                        (top.y - bottom.y) * (p.x - bottom.x);
+    return (determinant < 0.0) ? -1.0 : 1.0;
 }
 
 ofPoint BeamDescriptor::rotate_point(ofPoint point, ofPoint center, float angle)

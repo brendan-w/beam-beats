@@ -34,6 +34,7 @@ public:
 private:
     void find_blob();
     void find_details();
+    float left_or_right(ofPoint p);
     ofPoint rotate_point(ofPoint point, ofPoint center, float angle);
 };
 
