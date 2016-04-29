@@ -18,6 +18,11 @@ void ofApp::setup()
     project_beams = false;
     list_devices();
 
+    //=====================================
+    //WARNING: hard coded values
+    //TODO: move to config file
+    //=====================================
+
     //construct our 4 beams (channel, base note, color)
     beams.push_back(Beam(1, 64, 0x00ffAA)); //green
     beams.push_back(Beam(2, 64, 0xfcb017)); //orange
