@@ -123,7 +123,8 @@ void ofApp::keyPressed(int key)
             project_beams = !project_beams;
             break;
         case OF_KEY_RETURN:
-            stop_learning();
+            for(BeamCamera* camera : cameras)
+                camera->stop_learning_beam();
             break;
         case OF_KEY_UP:
             for(BeamCamera* camera : cameras)
@@ -140,22 +141,8 @@ void ofApp::keyPressed(int key)
             {
                 int beam = key - '1';
 
-                stop_learning(); //stop learning any previous beams
-
                 for(BeamCamera* camera : cameras)
-                {
-                    if(!camera->is_learning())
-                        camera->start_learning_beam(beam);
-                }
+                    camera->start_learning_beam(beam);
             }
-    }
-}
-
-void ofApp::stop_learning()
-{
-    for(BeamCamera* camera : cameras)
-    {
-        if(!camera->is_learning())
-            camera->stop_learning_beam();
     }
 }

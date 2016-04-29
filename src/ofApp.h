@@ -7,7 +7,7 @@
 
 
 class ofApp : public ofBaseApp{
-	public:
+    public:
         ~ofApp();
         void setup();
         void update();
@@ -28,7 +28,6 @@ class ofApp : public ofBaseApp{
     private:
         //funcs ---------------------
         void list_devices();
-        void stop_learning();
 
         //data ----------------------
         bool show_raw;
