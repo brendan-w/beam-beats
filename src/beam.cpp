@@ -3,9 +3,25 @@
 #include "beam.h"
 
 
-Beam::Beam(int channel, int base_note) : channel(channel), base_note(base_note)
+Beam::Beam(int channel, int base_note, int color) :
+    channel(channel), base_note(base_note), color(color)
 {
 
+}
+
+void Beam::draw(vector<Hand> hands, int width)
+{
+    ofPushStyle();
+    ofSetHexColor(color);
+    ofFill();
+    ofDrawRectangle(0, 0, width, ofGetWindowHeight());
+
+    for(Hand& hand : hands)
+    {
+        
+    }
+
+    ofPopStyle();
 }
 
 void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)

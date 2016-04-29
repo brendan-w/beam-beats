@@ -32,6 +32,7 @@ class ofApp : public ofBaseApp{
 
         //data ----------------------
         bool show_raw;
+        bool project_beams;
         ofxMidiOut midi_out;
 
         vector<BeamCamera*> cameras;

@@ -15,13 +15,14 @@ ofApp::~ofApp()
 void ofApp::setup()
 {
     show_raw = false;
+    project_beams = false;
     list_devices();
 
-    //construct our 4 beams
-    beams.push_back(Beam(1, 64)); //channel, octave
-    beams.push_back(Beam(2, 64));
-    beams.push_back(Beam(3, 64));
-    beams.push_back(Beam(4, 64));
+    //construct our 4 beams (channel, base note, color)
+    beams.push_back(Beam(1, 64, 0x00ffAA)); //green
+    beams.push_back(Beam(2, 64, 0xfcb017)); //orange
+    beams.push_back(Beam(3, 64, 0x00b0d4)); //blue
+    beams.push_back(Beam(4, 64, 0x9c258e)); //purple
 
     cameras.push_back(new BeamCamera(0, "left"));
     //cameras.push_back(new BeamCamera(1, "right"));
@@ -59,23 +60,38 @@ void ofApp::draw()
         BeamCamera* camera = cameras[i];
         int row = HEIGHT * i;
 
-        if(show_raw)
-            camera->draw_raw(0, row);
-        else
-            camera->draw_working(0, row);
+        if(!project_beams)
+        {
+            if(show_raw)
+                camera->draw_raw(0, row);
+            else
+                camera->draw_working(0, row);
 
-        camera->draw_masks(WIDTH, row);
+            camera->draw_masks(WIDTH, row);
+        }
 
         //iterate over beams
         for(size_t b = 0; b < beams.size(); b++)
         {
+            //get hand objects from the camera, and parse them into notes
             vector<Hand> hands = camera->hands_for_beam(b);
             beams[b].update(hands, midi_out); //parse hands, and send MIDI
 
-            //draw the hand on screen
-            for(Hand& hand : hands)
+            if(project_beams)
             {
-                hand.draw(0, row);
+                int width = ofGetWindowWidth() / beams.size();
+                ofPushMatrix();
+                ofTranslate(width * b, 0, 0);
+                beams[b].draw(hands, width);
+                ofPopMatrix();
+            }
+            else
+            {
+                //draw the hand on screen
+                for(Hand& hand : hands)
+                {
+                    hand.draw(0, row);
+                }
             }
         }
     }
@@ -97,6 +113,9 @@ void ofApp::keyPressed(int key)
             break;
         case OF_KEY_TAB:
             show_raw = !show_raw;
+            break;
+        case OF_KEY_F1:
+            project_beams = !project_beams;
             break;
         case OF_KEY_RETURN:
             stop_learning();
