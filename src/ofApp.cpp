@@ -14,6 +14,7 @@ ofApp::~ofApp()
 //--------------------------------------------------------------
 void ofApp::setup()
 {
+    ofSetWindowPosition(0, 0);
     show_raw = false;
     list_devices();
 

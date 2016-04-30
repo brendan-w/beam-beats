@@ -7,7 +7,7 @@
 
 
 class ofApp : public ofBaseApp{
-	public:
+    public:
         ~ofApp();
         void setup();
         void update();
