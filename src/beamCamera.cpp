@@ -186,6 +186,10 @@ bool BeamCamera::is_learning()
 
 void BeamCamera::start_learning_beam(int beam)
 {
+    //if we were learning before, stop, before moving on
+    if(learning != NOT_LEARNING)
+        stop_learning_beam();
+
     ofLog() << cam_name << " started learning beam " << beam;
     new_beam(beam);
     learning = beam;
@@ -193,6 +197,10 @@ void BeamCamera::start_learning_beam(int beam)
 
 void BeamCamera::stop_learning_beam()
 {
+    //can't stop a stopped learning
+    if(learning == NOT_LEARNING)
+        return;
+
     //compute and save the minimum area rect
     BeamDescriptor* beam = beams[learning];
     beam->learn();

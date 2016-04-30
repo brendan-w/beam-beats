@@ -14,6 +14,8 @@
 #define BACKGROUND_FILE "background"
 #define IMAGE_FORMAT "png"
 
+#define BEAM_BAR_DIVISOR 3
+
 //UI
 #define THRESHOLD_INCREMENT 2
 
