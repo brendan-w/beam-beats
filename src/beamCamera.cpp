@@ -111,16 +111,19 @@ void BeamCamera::update()
 
 void BeamCamera::draw_raw(int x, int y)
 {
+    ofSetHexColor(0xFFFFFF);
     raw.draw(x, y);
 }
 
 void BeamCamera::draw_working(int x, int y)
 {
+    ofSetHexColor(0xFFFFFF);
     grey_working.draw(x, y);
 }
 
 void BeamCamera::draw_masks(int x, int y)
 {
+    ofSetHexColor(0xFFFFFF);
     cvZero(grey_beam_working.getCvImage());
 
     for(BeamDescriptor* beam : beams)
@@ -140,8 +143,8 @@ void BeamCamera::draw_masks(int x, int y)
     {
         if(beam != NULL)
         {
-            beam->blob.draw();
             ofPushStyle();
+            beam->blob.draw(x, y);
             ofSetHexColor(0xFF0000);
             ofDrawCircle(beam->top.x, beam->top.y, 3);
             ofSetHexColor(0x0000FF);

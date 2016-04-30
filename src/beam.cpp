@@ -91,6 +91,6 @@ int Beam::region_to_note(size_t region)
 
 size_t Beam::speed_to_midi_velocity(float speed)
 {
-    return midi_velocities[3]; //TODO
+    return midi_velocities[0]; //TODO
 }
 
