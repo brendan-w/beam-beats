@@ -31,7 +31,7 @@ void ofApp::setup()
     beams.push_back(Beam(4, 64, 0x9c258e)); //purple
 
     cameras.push_back(new BeamCamera(0, "left"));
-    //cameras.push_back(new BeamCamera(1, "right"));
+    cameras.push_back(new BeamCamera(1, "right"));
 
     midi_out.openPort(1);
 }
