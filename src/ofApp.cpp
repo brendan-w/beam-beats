@@ -15,6 +15,7 @@ ofApp::~ofApp()
 void ofApp::setup()
 {
     ofSetWindowPosition(0, 0);
+    ofSetFrameRate(FRAMERATE);
     show_raw = false;
     project_beams = false;
     list_devices();
