@@ -27,9 +27,9 @@ void ofApp::setup()
 
     //construct our 4 beams (channel, base note, color)
     beams.push_back(Beam(1, 64, 0x00ffAA)); //green
-    beams.push_back(Beam(2, 64, 0xfcb017)); //orange
-    beams.push_back(Beam(3, 64, 0x00b0d4)); //blue
-    beams.push_back(Beam(4, 64, 0x9c258e)); //purple
+    //beams.push_back(Beam(2, 64, 0xfcb017)); //orange
+    //beams.push_back(Beam(3, 64, 0x00b0d4)); //blue
+    //beams.push_back(Beam(4, 64, 0x9c258e)); //purple
 
     cameras.push_back(new BeamCamera(0, "left"));
     cameras.push_back(new BeamCamera(1, "right"));
@@ -80,6 +80,9 @@ void ofApp::draw()
         //iterate over beams
         for(size_t b = 0; b < beams.size(); b++)
         {
+            if(!camera->handles_beam(b))
+                continue;
+
             //get hand objects from the camera, and parse them into notes
             vector<Hand> hands = camera->hands_for_beam(b);
             beams[b].update(hands, midi_out); //parse hands, and send MIDI

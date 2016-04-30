@@ -15,6 +15,7 @@ public:
 
     void zero();
     void learn();
+    bool found_beam();
     void add_to_mask(ofxCvGrayscaleImage partial);
     Hand blob_to_hand(ofxCvBlob hand);
 

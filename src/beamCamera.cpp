@@ -273,6 +273,11 @@ bool BeamCamera::mask_exists(int beam)
     return (beam < (int)beams.size()) && (beams[beam] != NULL);
 }
 
+bool BeamCamera::handles_beam(int beam)
+{
+    return mask_exists(beam) && beams[beam]->found_beam();
+}
+
 void BeamCamera::new_beam(int beam)
 {
     //make sure our mask array has a spot for this beam

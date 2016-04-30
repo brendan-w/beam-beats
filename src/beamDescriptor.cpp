@@ -21,6 +21,11 @@ BeamDescriptor::~BeamDescriptor()
     mask.clear();
 }
 
+bool BeamDescriptor::found_beam()
+{
+    return (blob.pts.size() > 0);
+}
+
 void BeamDescriptor::zero()
 {
     cvZero(mask.getCvImage());

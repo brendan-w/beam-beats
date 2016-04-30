@@ -29,6 +29,7 @@ public:
     void adjust_threshold(int delta);
 
     bool is_learning();
+    bool handles_beam(int beam);
 
 private:
     //funcs --------------------
