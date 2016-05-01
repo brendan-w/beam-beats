@@ -115,11 +115,14 @@ void ofApp::draw()
         }
     }
 
-    ofSetHexColor(0xffffff);
-    stringstream t;
-    t << "FPS: " << ofGetFrameRate() << endl;
-    t << "THRESH: " << cameras[0]->get_threshold() << endl;
-    ofDrawBitmapString(t.str(), 20, 20);
+    if(!project_beams)
+    {
+        ofSetHexColor(0xffffff);
+        stringstream t;
+        t << "FPS: " << ofGetFrameRate() << endl;
+        t << "THRESH: " << cameras[0]->get_threshold() << endl;
+        ofDrawBitmapString(t.str(), 20, 20);
+    }
 }
 
 
