@@ -11,6 +11,7 @@
 #define N_BLOBS 10
 
 #define INIT_THRESHOLD 128
+#define BLUR 11
 #define BACKGROUND_FILE "background"
 #define IMAGE_FORMAT "png"
 

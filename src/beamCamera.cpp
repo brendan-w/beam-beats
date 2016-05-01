@@ -98,10 +98,10 @@ void BeamCamera::update()
               grey_bg.getCvImage(),
               grey_working.getCvImage());
         grey_working.flagImageChanged();
-        grey_working.blur(5);
+        grey_working.blur(BLUR);
         //apply our intensity threshold
         grey_working.threshold(threshold);
-        grey_working.dilate();
+        grey_working.blur(BLUR);
 
         if(is_learning() && beams[learning] != NULL)
         {
