@@ -98,9 +98,10 @@ void BeamCamera::update()
               grey_bg.getCvImage(),
               grey_working.getCvImage());
         grey_working.flagImageChanged();
-
+        grey_working.blur(5);
         //apply our intensity threshold
         grey_working.threshold(threshold);
+        grey_working.dilate();
 
         if(is_learning() && beams[learning] != NULL)
         {
@@ -265,7 +266,8 @@ vector<Hand> BeamCamera::hands_for_beam(int beam)
 
     beams[beam]->old_hands = all_hands;
 
-    return hands_with_velocity;
+    //return hands_with_velocity;
+    return all_hands;
 }
 
 bool BeamCamera::mask_exists(int beam)
