@@ -101,7 +101,7 @@ void BeamCamera::update()
         grey_working.blur(BLUR);
         //apply our intensity threshold
         grey_working.threshold(threshold);
-        grey_working.blur(BLUR);
+        //grey_working.blur(BLUR);
 
         if(is_learning() && beams[learning] != NULL)
         {

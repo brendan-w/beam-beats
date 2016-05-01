@@ -6,7 +6,7 @@
 #define WIDTH 320
 #define HEIGHT 240
 
-#define BLOB_AREA_MIN 40
+#define BLOB_AREA_MIN 100
 #define BLOB_AREA_MAX (WIDTH * HEIGHT / 4)
 #define N_BLOBS 10
 
