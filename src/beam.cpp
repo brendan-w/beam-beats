@@ -63,14 +63,14 @@ void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
         {
             //NOTE ON
             ofLog() << "ON " << note << " : " << vel;
-            midi_out.sendNoteOn(1, note, vel);
+            midi_out.sendNoteOn(channel, note, vel);
         }
         else if(!current[r].status && regions[r].status)
         {
             //a hand just LEFT a region
             //NOTE OFF
             ofLog() << "OFF " << note << " : " << vel;
-            midi_out.sendNoteOff(1, note, 64);
+            midi_out.sendNoteOff(channel, note, 64);
         }
 
         //walk the buffers
