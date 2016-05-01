@@ -6,17 +6,11 @@
 #include "settings.h"
 #include "hand.h"
 
-#define sizeof_array(a) (sizeof(a)/sizeof(a[0]))
-
-const int midi_velocities[] = { 32, 64, 96, 127 };
-const int midi_scale[] = { 0, 3, 5, 7, 10, 12 }; //pentatonic
-
 
 class BeamRegion
 {
 public:
     bool status = false;
-    uint64_t time;
     Hand hand;
 };
 
@@ -35,7 +29,7 @@ private:
     const int color;
 
     //table of region statuses
-    BeamRegion regions[sizeof_array(midi_scale)];
+    BeamRegion previous_regions[SCALE_SIZE];
 
     size_t hand_to_region(Hand& hand);
     int region_to_note(size_t region);

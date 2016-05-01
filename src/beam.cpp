@@ -32,36 +32,34 @@ void Beam::draw(vector<Hand> hands)
 
 void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
 {
-    uint64_t frame = ofGetFrameNum();
-    BeamRegion current[sizeof_array(midi_scale)];
+    BeamRegion regions[SCALE_SIZE];
 
     //sort hands into their respective regions
     for(Hand& hand : hands)
     {
         size_t r = hand_to_region(hand);
         //mark that there is a hand in this region
-        current[r].status = true;
-        current[r].time = frame;
+        regions[r].status = true;
         //fastest hand dominates
-        if(hand.speed() > current[r].hand.speed())
-            current[r].hand = hand;
+        if(hand.speed() > regions[r].hand.speed())
+            regions[r].hand = hand;
     }
 
-    //check the current region status against the current status,
+    //check the current region status against the previous status,
     //to determine whether to send note ON or OFF
-    for(size_t r = 0; r < sizeof_array(midi_scale); r++)
+    for(size_t r = 0; r < SCALE_SIZE; r++)
     {
         int note = region_to_note(r);
-        int vel = speed_to_midi_velocity(current[r].hand.speed());
+        int vel = speed_to_midi_velocity(regions[r].hand.speed());
 
         //if the hand is new
-        if(current[r].status && !regions[r].status)
+        if(regions[r].status && !previous_regions[r].status)
         {
             //NOTE ON
             ofLog() << "ON " << note << " : " << vel;
             midi_out.sendNoteOn(channel, note, vel);
         }
-        else if(!current[r].status && regions[r].status)
+        else if(!regions[r].status && previous_regions[r].status)
         {
             //a hand just LEFT a region
             //NOTE OFF
@@ -70,14 +68,14 @@ void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
         }
 
         //walk the buffers
-        regions[r] = current[r];
+        previous_regions[r] = regions[r];
     }
 }
 
 size_t Beam::hand_to_region(Hand& hand)
 {
-    size_t r = floor(ofLerp(0, sizeof_array(midi_scale), hand.pos.y));
-    return (r == sizeof_array(midi_scale)) ? (r - 1) : r;
+    size_t r = floor(ofLerp(0, SCALE_SIZE, hand.pos.y));
+    return (r == SCALE_SIZE) ? (r - 1) : r;
 }
 
 int Beam::region_to_note(size_t region)
