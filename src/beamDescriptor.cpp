@@ -43,8 +43,8 @@ void BeamDescriptor::find_blob()
 {
     ofxCvContourFinder contourFinder;
     contourFinder.findContours(mask,
-                               BLOB_AREA_MIN,
-                               (WIDTH * HEIGHT), //allow large blobs
+                               BEAM_BLOB_AREA_MIN,
+                               BEAM_BLOB_AREA_MAX,
                                1, //ofxOpenCv sorts for the largest blob
                                false); //find holes
 

@@ -5,10 +5,13 @@
 #define FRAMERATE 60
 #define WIDTH 320
 #define HEIGHT 240
+#define AREA (WIDTH * HEIGHT)
 
-#define BLOB_AREA_MIN 100
-#define BLOB_AREA_MAX (WIDTH * HEIGHT / 4)
-#define N_BLOBS 10
+#define BEAM_BLOB_AREA_MIN (AREA / 200)
+#define BEAM_BLOB_AREA_MAX (AREA / 2)
+#define BLOB_AREA_MIN (AREA / 600)
+#define BLOB_AREA_MAX (AREA / 8)
+#define N_BLOBS 4
 
 #define INIT_THRESHOLD 128
 #define BLUR 11

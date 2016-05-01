@@ -24,8 +24,8 @@ public:
     void draw(vector<Hand> hands);
 
 private:
-    const int base_note;
     const int channel;
+    const int base_note;
     const int color;
 
     //table of region statuses
