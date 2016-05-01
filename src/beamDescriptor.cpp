@@ -21,6 +21,20 @@ BeamDescriptor::~BeamDescriptor()
     mask.clear();
 }
 
+void BeamDescriptor::draw(int x, int y)
+{
+    if(found_beam())
+    {
+        ofPushStyle();
+        blob.draw(x, y);
+        ofSetHexColor(0xFF0000);
+        ofDrawCircle(x + top.x, y + top.y, 3);
+        ofSetHexColor(0x0000FF);
+        ofDrawCircle(x + bottom.x, y + bottom.y, 3);
+        ofPopStyle();
+    }
+}
+
 bool BeamDescriptor::found_beam()
 {
     return (blob.pts.size() > 0);
@@ -35,7 +49,7 @@ void BeamDescriptor::zero()
 void BeamDescriptor::learn()
 {
     find_blob();
-    if(blob.pts.size() > 0)
+    if(found_beam())
         find_details();
 }
 

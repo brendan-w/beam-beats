@@ -13,6 +13,7 @@ public:
     BeamDescriptor(ofImage& image);
     ~BeamDescriptor();
 
+    void draw(int x, int y);
     void zero();
     void learn();
     bool found_beam();

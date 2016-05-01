@@ -143,15 +143,7 @@ void BeamCamera::draw_masks(int x, int y)
     for(BeamDescriptor* beam : beams)
     {
         if(beam != NULL)
-        {
-            ofPushStyle();
-            beam->blob.draw(x, y);
-            ofSetHexColor(0xFF0000);
-            ofDrawCircle(beam->top.x, beam->top.y, 3);
-            ofSetHexColor(0x0000FF);
-            ofDrawCircle(beam->bottom.x, beam->bottom.y, 3);
-            ofPopStyle();
-        }
+            beam->draw(x, y);
     }
 }
 
