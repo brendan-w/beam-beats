@@ -26,12 +26,13 @@ class Beam
 public:
     Beam(int channel, int base_note, int color);
     void update(vector<Hand> hands, ofxMidiOut& midi_out);
-    void draw(vector<Hand> hands, int width);
+    void draw_bg();
+    void draw(vector<Hand> hands);
 
+private:
     const int base_note;
     const int channel;
     const int color;
-private:
 
     //table of region statuses
     BeamRegion regions[sizeof_array(midi_scale)];

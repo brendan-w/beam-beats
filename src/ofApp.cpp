@@ -78,7 +78,13 @@ void ofApp::draw()
         }
         else
         {
-            draw_colors();
+            for(size_t b = 0; b < beams.size(); b++)
+            {
+                ofPushMatrix();
+                goto_beam(b);
+                beams[b].draw_bg();
+                ofPopMatrix();
+            }
         }
 
         //iterate over beams
@@ -93,10 +99,9 @@ void ofApp::draw()
 
             if(project_beams)
             {
-                int width = ofGetWindowWidth() / beams.size();
                 ofPushMatrix();
-                ofTranslate(width * b, 0, 0);
-                beams[b].draw(hands, width);
+                goto_beam(b);
+                beams[b].draw(hands);
                 ofPopMatrix();
             }
             else
@@ -117,20 +122,12 @@ void ofApp::draw()
     ofDrawBitmapString(t.str(), 20, 20);
 }
 
-void ofApp::draw_colors()
+
+void ofApp::goto_beam(int beam)
 {
-    const int w = ofGetWindowWidth() / beams.size();
-    for(size_t b = 0; b < beams.size(); b++)
-    {
-        ofPushStyle();
-        ofSetHexColor(beams[b].color);
-        ofFill();
-        ofDrawRectangle(w * b,
-                        0,
-                        w,
-                        ofGetWindowHeight());
-        ofPopStyle();
-    }
+    int width = ofGetWindowWidth() / beams.size();
+    ofTranslate(width * beam, 0, 0);
+    ofScale(width, ofGetWindowHeight(), 1);
 }
 
 //--------------------------------------------------------------

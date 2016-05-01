@@ -28,7 +28,7 @@ class ofApp : public ofBaseApp{
     private:
         //funcs ---------------------
         void list_devices();
-        void draw_colors();
+        void goto_beam(int beam);
 
         //data ----------------------
         bool show_raw;

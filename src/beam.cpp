@@ -9,37 +9,25 @@ Beam::Beam(int channel, int base_note, int color) :
 
 }
 
-void Beam::draw(vector<Hand> hands, int w)
+void Beam::draw_bg()
 {
-    const int h = ofGetWindowHeight();
-
-    if(hands.size() == 0)
-        return;
-
     ofPushStyle();
-    ofSetHexColor(0xFFFFFF);
-
-        ofFill();
-        ofDrawRectangle(0,
-                        0,
-                        w,
-                        ofGetWindowHeight());
-
-
-    /*
-    for(Hand& hand : hands)
-    {
-        int y = ofMap(hand.pos.x, -1, 1, 0, h);
-        int h_bar = (h / BEAM_BAR_DIVISOR);
-
-        ofPushMatrix();
-        ofTranslate(0, y - (h_bar / 2), 0);
-        ofDrawRectangle(0, 0, w, h_bar);
-        ofPopMatrix();
-    }
-    */
-
+    ofFill();
+    ofSetHexColor(color);
+    ofDrawRectangle(0, 0, 1, 1);
     ofPopStyle();
+}
+
+void Beam::draw(vector<Hand> hands)
+{
+    if(hands.size() > 0)
+    {
+        ofPushStyle();
+        ofFill();
+        ofSetHexColor(0xFFFFFF);
+        ofDrawRectangle(0, 0, 1, 1);
+        ofPopStyle();
+    }
 }
 
 void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
