@@ -142,10 +142,10 @@ void ofApp::keyPressed(int key)
             for(BeamCamera* camera : cameras)
                 camera->learn_background();
             break;
-        case OF_KEY_TAB:
+        case OF_KEY_F1:
             show_raw = !show_raw;
             break;
-        case OF_KEY_F1:
+        case OF_KEY_TAB:
             project_beams = !project_beams;
             break;
         case OF_KEY_RETURN:
