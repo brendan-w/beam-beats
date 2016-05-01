@@ -13,12 +13,20 @@ void Beam::draw(vector<Hand> hands, int w)
 {
     const int h = ofGetWindowHeight();
 
+    if(hands.size() == 0)
+        return;
+
     ofPushStyle();
-    ofSetHexColor(color);
-    ofFill();
-    ofDrawRectangle(0, 0, w, h);
     ofSetHexColor(0xFFFFFF);
 
+        ofFill();
+        ofDrawRectangle(0,
+                        0,
+                        w,
+                        ofGetWindowHeight());
+
+
+    /*
     for(Hand& hand : hands)
     {
         int y = ofMap(hand.pos.x, -1, 1, 0, h);
@@ -27,9 +35,9 @@ void Beam::draw(vector<Hand> hands, int w)
         ofPushMatrix();
         ofTranslate(0, y - (h_bar / 2), 0);
         ofDrawRectangle(0, 0, w, h_bar);
-
         ofPopMatrix();
     }
+    */
 
     ofPopStyle();
 }
