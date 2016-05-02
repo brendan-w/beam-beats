@@ -27,9 +27,9 @@ void ofApp::setup()
 
     //construct our 4 beams (channel, base note, color)
     beams.push_back(Beam(1, 28, 0x9a278b)); //purple
-    beams.push_back(Beam(1, 40, 0xeb273c)); //red
-    beams.push_back(Beam(1, 52, 0x07abd5)); //blue
-    beams.push_back(Beam(1, 64, 0xfab216)); //orange
+    beams.push_back(Beam(2, 40, 0xeb273c)); //red
+    beams.push_back(Beam(3, 52, 0x07abd5)); //blue
+    beams.push_back(Beam(4, 64, 0xfab216)); //orange
 
     cameras.push_back(new BeamCamera(0, "left"));
     cameras.push_back(new BeamCamera(1, "right"));
@@ -62,6 +62,18 @@ void ofApp::draw()
     ofBackground(0);
     ofSetColor(255);
 
+    if(project_beams)
+    {
+        //draw all base colors first
+        for(size_t b = 0; b < beams.size(); b++)
+        {
+            ofPushMatrix();
+            goto_beam(b);
+            beams[b].draw_bg();
+            ofPopMatrix();
+        }
+    }
+
     for(size_t i = 0; i < cameras.size(); i++)
     {
         BeamCamera* camera = cameras[i];
@@ -75,16 +87,6 @@ void ofApp::draw()
                 camera->draw_working(0, row);
 
             camera->draw_masks(WIDTH, row);
-        }
-        else
-        {
-            for(size_t b = 0; b < beams.size(); b++)
-            {
-                ofPushMatrix();
-                goto_beam(b);
-                beams[b].draw_bg();
-                ofPopMatrix();
-            }
         }
 
         //iterate over beams

@@ -24,7 +24,7 @@ void Beam::draw(vector<Hand> hands)
     {
         ofPushStyle();
         ofFill();
-        ofSetHexColor(0xFFFFFF);
+        ofSetHexColor(0xAAAAAA);
         ofDrawRectangle(0, 0, 1, 1);
         ofPopStyle();
     }
