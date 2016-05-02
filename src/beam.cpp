@@ -33,6 +33,7 @@ void Beam::draw(vector<Hand> hands)
 void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
 {
     BeamRegion regions[SCALE_SIZE];
+    float max_bend = 0.0;
 
     //sort hands into their respective regions
     for(Hand& hand : hands)
@@ -43,7 +44,13 @@ void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
         //fastest hand dominates
         if(hand.speed() > regions[r].hand.speed())
             regions[r].hand = hand;
+
+        if(hand.vel.x > max_bend)
+            max_bend = (hand.vel.x < 0) ? 0 : hand.vel.x;
+
     }
+
+    midi_out.sendPitchBend(channel, 0x2000 + (0x8000 * max_bend));
 
     //check the current region status against the previous status,
     //to determine whether to send note ON or OFF
