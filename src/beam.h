@@ -30,6 +30,7 @@ private:
 
     //table of region statuses
     BeamRegion previous_regions[SCALE_SIZE];
+    int previous_bend;
 
     size_t hand_to_region(Hand& hand);
     int region_to_note(size_t region);

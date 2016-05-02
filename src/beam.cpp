@@ -4,7 +4,7 @@
 
 
 Beam::Beam(int channel, int base_note, int color) :
-    channel(channel), base_note(base_note), color(color)
+    channel(channel), base_note(base_note), color(color), previous_bend(0x2000)
 {
 
 }
@@ -33,7 +33,7 @@ void Beam::draw(vector<Hand> hands)
 void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
 {
     BeamRegion regions[SCALE_SIZE];
-    float max_bend = 0.0;
+    float max_vel = 0.0;
 
     //sort hands into their respective regions
     for(Hand& hand : hands)
@@ -45,12 +45,17 @@ void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
         if(hand.speed() > regions[r].hand.speed())
             regions[r].hand = hand;
 
-        if(hand.vel.x > max_bend)
-            max_bend = (hand.vel.x < 0) ? 0 : hand.vel.x;
-
+        //hand with the most velocity dominates pitch bending
+        if(hand.vel.x > max_vel)
+            max_vel = (hand.vel.x < 0) ? 0 : hand.vel.x;
     }
 
-    midi_out.sendPitchBend(channel, 0x2000 + (0x8800 * max_bend));
+    int bend = 0x2000 + (0x8800 * max_vel);
+    if(previous_bend != bend)
+    {
+        midi_out.sendPitchBend(channel, bend);
+        previous_bend = bend;
+    }
 
     //check the current region status against the previous status,
     //to determine whether to send note ON or OFF
