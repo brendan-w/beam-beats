@@ -17,6 +17,7 @@ public:
     ofPoint vel;
     ofPoint intersection; //perpedicular intersection with the center of the beam
     ofxCvBlob blob;
+    float area_vel;
 
     Hand() { };
     Hand(ofPoint _pos, ofPoint _intersection, ofxCvBlob _blob)
@@ -29,6 +30,7 @@ public:
     void compute_velocity(Hand& old_hand)
     {
         vel = old_hand.pos - pos;
+        area_vel = old_hand.blob.area - blob.area;
     };
 
     bool same_hand_as(Hand& other)
@@ -37,7 +39,7 @@ public:
                 abs(pos.y - other.pos.y) <= HAND_MAX_VY);
     };
 
-    float speed() { return vel.length(); }
+    float speed() { return vel.length() * area_vel; }
 
     void draw(int x, int y)
     {
