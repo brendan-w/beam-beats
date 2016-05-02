@@ -50,7 +50,7 @@ void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
 
     }
 
-    midi_out.sendPitchBend(channel, 0x2000 + (0x8000 * max_bend));
+    midi_out.sendPitchBend(channel, 0x2000 + (0x8800 * max_bend));
 
     //check the current region status against the previous status,
     //to determine whether to send note ON or OFF
