@@ -216,12 +216,13 @@ void BeamCamera::stop_learning_beam()
 
 vector<Hand> BeamCamera::hands_for_beam(int beam)
 {
+    //return empty array if this camera doesn't handle a beam
+    //or if we're in the middle of learning
+    if(!mask_exists(beam) || is_learning())
+        return vector<Hand>();
+
     vector<Hand> all_hands;
     vector<Hand> hands_with_velocity;
-
-    //return empty array if this camera doesn't handle a beam
-    if(!mask_exists(beam))
-        return vector<Hand>();
 
     //apply the mask that corresponds to this beam
     cvAnd(grey_working.getCvImage(),

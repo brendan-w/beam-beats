@@ -75,7 +75,7 @@ void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
 size_t Beam::hand_to_region(Hand& hand)
 {
     size_t r = floor(ofLerp(0, SCALE_SIZE, hand.pos.y));
-    return (r == SCALE_SIZE) ? (r - 1) : r;
+    return max((size_t) 0, min(r, SCALE_SIZE - 1));
 }
 
 int Beam::region_to_note(size_t region)

@@ -13,7 +13,7 @@
 #define BLOB_AREA_MAX (AREA / 8)
 #define N_BLOBS 4
 
-#define INIT_THRESHOLD 128
+#define INIT_THRESHOLD 100
 #define BLUR 11
 #define BACKGROUND_FILE "background"
 #define IMAGE_FORMAT "png"
