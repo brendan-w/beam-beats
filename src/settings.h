@@ -9,7 +9,7 @@
 
 #define BEAM_BLOB_AREA_MIN (AREA / 200)
 #define BEAM_BLOB_AREA_MAX (AREA / 2)
-#define BLOB_AREA_MIN (AREA / 600)
+#define BLOB_AREA_MIN (AREA / 4000)
 #define BLOB_AREA_MAX (AREA / 8)
 #define N_BLOBS 4
 
