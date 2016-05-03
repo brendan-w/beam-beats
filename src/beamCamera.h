@@ -28,6 +28,9 @@ public:
     int get_threshold();
     void adjust_threshold(int delta);
 
+    int get_exposure();
+    void adjust_exposure(int delta);
+
     bool is_learning();
     bool handles_beam(int beam);
 
@@ -41,6 +44,7 @@ private:
     //data --------------------
     const string cam_name;
     int threshold;
+    int exposure;
     int learning;
 
     ofVideoGrabber grabber;

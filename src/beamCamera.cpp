@@ -8,6 +8,10 @@
 
 BeamCamera::BeamCamera(int deviceID, const string name) : cam_name(name)
 {
+    threshold = INIT_THRESHOLD;
+    exposure = INIT_EXPOSURE;
+    learning = NOT_LEARNING;
+
     grabber.setGrabber(std::make_shared<ofxPS3EyeGrabber>());
     grabber.setDeviceID(deviceID);
 
@@ -16,20 +20,18 @@ BeamCamera::BeamCamera(int deviceID, const string name) : cam_name(name)
     grabber.setup(WIDTH, HEIGHT);
 
     //PS3 Eye specific settings
-    grabber.getGrabber<ofxPS3EyeGrabber>()->setAutogain(false);
-    grabber.getGrabber<ofxPS3EyeGrabber>()->setAutoWhiteBalance(false);
-    grabber.getGrabber<ofxPS3EyeGrabber>()->setGain(0);
-    grabber.getGrabber<ofxPS3EyeGrabber>()->setBrightness(0);
-    grabber.getGrabber<ofxPS3EyeGrabber>()->setExposure(40);
+    shared_ptr<ofxPS3EyeGrabber> eye = grabber.getGrabber<ofxPS3EyeGrabber>();
+    eye->setAutogain(false);
+    eye->setAutoWhiteBalance(false);
+    eye->setGain(0);
+    eye->setBrightness(0);
+    eye->setExposure(exposure);
 
     //allocate our working surfaces
     raw.allocate(WIDTH, HEIGHT);
     grey_bg.allocate(WIDTH, HEIGHT);
     grey_working.allocate(WIDTH, HEIGHT);
     grey_beam_working.allocate(WIDTH, HEIGHT);
-
-    threshold = INIT_THRESHOLD;
-    learning = NOT_LEARNING;
 
     load_data();
 }
@@ -162,6 +164,20 @@ void BeamCamera::adjust_threshold(int delta)
     if(new_thresh < 0) new_thresh = 0;
     else if(new_thresh > 255) new_thresh = 255;
     threshold = new_thresh;
+}
+
+int BeamCamera::get_exposure()
+{
+    return grabber.getGrabber<ofxPS3EyeGrabber>()->getExposure();
+}
+
+void BeamCamera::adjust_exposure(int delta)
+{
+    int new_exposure = exposure + delta;
+    if(new_exposure < 0) new_exposure = 0;
+    else if(new_exposure > 255) new_exposure = 255;
+    exposure = new_exposure;
+    grabber.getGrabber<ofxPS3EyeGrabber>()->setExposure(new_exposure);
 }
 
 void BeamCamera::learn_background()

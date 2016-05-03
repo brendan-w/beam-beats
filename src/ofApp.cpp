@@ -123,6 +123,7 @@ void ofApp::draw()
         stringstream t;
         t << "FPS: " << ofGetFrameRate() << endl;
         t << "THRESH: " << cameras[0]->get_threshold() << endl;
+        t << "EXPOSURE: " << cameras[0]->get_exposure() << endl;
         ofDrawBitmapString(t.str(), 20, 20);
     }
 }
@@ -161,6 +162,14 @@ void ofApp::keyPressed(int key)
         case OF_KEY_DOWN:
             for(BeamCamera* camera : cameras)
                 camera->adjust_threshold(-THRESHOLD_INCREMENT);
+            break;
+        case OF_KEY_RIGHT:
+            for(BeamCamera* camera : cameras)
+                camera->adjust_exposure(EXPOSURE_INCREMENT);
+            break;
+        case OF_KEY_LEFT:
+            for(BeamCamera* camera : cameras)
+                camera->adjust_exposure(-EXPOSURE_INCREMENT);
             break;
 
         default:
