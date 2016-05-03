@@ -32,6 +32,10 @@ void Beam::draw(vector<Hand> hands)
 
 void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
 {
+    //return early if there's nothing to do
+    if(hands.size() == 0)
+        return;
+
     BeamRegion regions[SCALE_SIZE];
     float max_vel = 0.0;
 
