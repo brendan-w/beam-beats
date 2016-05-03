@@ -6,8 +6,7 @@
 Beam::Beam(int channel, int base_note, int color) :
     channel(channel), base_note(base_note), color(color), previous_bend(0x2000)
 {
-    //alpha = 0;
-    alpha = 255;
+    alpha = 0;
 }
 
 void Beam::draw_bg()
