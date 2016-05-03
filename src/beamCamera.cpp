@@ -20,7 +20,7 @@ BeamCamera::BeamCamera(int deviceID, const string name) : cam_name(name)
     grabber.getGrabber<ofxPS3EyeGrabber>()->setAutoWhiteBalance(false);
     grabber.getGrabber<ofxPS3EyeGrabber>()->setGain(0);
     grabber.getGrabber<ofxPS3EyeGrabber>()->setBrightness(0);
-    grabber.getGrabber<ofxPS3EyeGrabber>()->setExposure(80);
+    grabber.getGrabber<ofxPS3EyeGrabber>()->setExposure(40);
 
     //allocate our working surfaces
     raw.allocate(WIDTH, HEIGHT);
