@@ -41,8 +41,9 @@ void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
         size_t r = hand_to_region(hand);
         //mark that there is a hand in this region
         regions[r].status = true;
-        //fastest hand dominates
-        if(hand.speed() > regions[r].hand.speed())
+
+        //biggest hand dominates
+        if(hand.blob.area > regions[r].hand.blob.area)
             regions[r].hand = hand;
 
         //hand with the most velocity dominates pitch bending
@@ -62,12 +63,12 @@ void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
     for(size_t r = 0; r < SCALE_SIZE; r++)
     {
         int note = region_to_note(r);
-        int vel = speed_to_midi_velocity(regions[r].hand.speed());
 
         //if the hand is new
         if(regions[r].status && !previous_regions[r].status)
         {
             //NOTE ON
+            int vel = area_to_velocity(regions[r].hand.blob.area);
             ofLog() << "ON " << note << " : " << vel;
             midi_out.sendNoteOn(channel, note, vel);
         }
@@ -75,7 +76,7 @@ void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
         {
             //a hand just LEFT a region
             //NOTE OFF
-            ofLog() << "OFF " << note << " : " << vel;
+            ofLog() << "OFF " << note;
             midi_out.sendNoteOff(channel, note, 64);
         }
 
@@ -86,8 +87,8 @@ void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
 
 size_t Beam::hand_to_region(Hand& hand)
 {
-    size_t r = floor(ofLerp(0, SCALE_SIZE, hand.pos.y));
-    return max((size_t) 0, min(r, SCALE_SIZE - 1));
+    int r = floor(ofLerp(0, SCALE_SIZE, hand.pos.y));
+    return max(0, min(r, (int) SCALE_SIZE - 1)); //clamp
 }
 
 int Beam::region_to_note(size_t region)
@@ -95,8 +96,10 @@ int Beam::region_to_note(size_t region)
     return base_note + midi_scale[region];
 }
 
-size_t Beam::speed_to_midi_velocity(float speed)
+size_t Beam::area_to_velocity(float area)
 {
-    return midi_velocities[0]; //TODO
+    int vel = ofMap(area, 30, 100, 0, VEL_SIZE - 1);
+    vel = max(0, min(vel, (int) VEL_SIZE - 1)); //clamp
+    return midi_velocities[vel];
 }
 

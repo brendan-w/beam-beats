@@ -225,7 +225,7 @@ vector<Hand> BeamCamera::hands_for_beam(int beam)
         return vector<Hand>();
 
     vector<Hand> all_hands;
-    vector<Hand> hands_with_velocity;
+    //vector<Hand> hands_with_velocity;
 
     //apply the mask that corresponds to this beam
     cvAnd(grey_working.getCvImage(),
@@ -252,7 +252,7 @@ vector<Hand> BeamCamera::hands_for_beam(int beam)
             if(hand.same_hand_as(old_hand))
             {
                 hand.compute_velocity(old_hand);
-                hands_with_velocity.push_back(hand);
+                //hands_with_velocity.push_back(hand);
                 break;
             }
         }

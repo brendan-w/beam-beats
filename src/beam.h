@@ -34,5 +34,5 @@ private:
 
     size_t hand_to_region(Hand& hand);
     int region_to_note(size_t region);
-    size_t speed_to_midi_velocity(float speed);
+    size_t area_to_velocity(float area);
 };
