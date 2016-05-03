@@ -21,6 +21,7 @@
 #define BACKGROUND_FILE "background"
 #define IMAGE_FORMAT "png"
 #define BEAM_BAR_DIVISOR 3
+#define BEAM_DECAY_RATE 20
 
 const int midi_velocities[] = { 32, 64, 96, 127 };
 const int midi_scale[] = { 0, 3, 5, 7, 10, 12 }; //pentatonic

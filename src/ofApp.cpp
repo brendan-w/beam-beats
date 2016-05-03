@@ -16,8 +16,10 @@ void ofApp::setup()
 {
     ofSetWindowPosition(0, 0);
     ofSetFrameRate(FRAMERATE);
+    ofEnableAlphaBlending();
     show_raw = false;
-    project_beams = false;
+    //project_beams = false;
+    project_beams = true;
     list_devices();
 
     //=====================================

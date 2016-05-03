@@ -28,6 +28,8 @@ private:
     const int base_note;
     const int color;
 
+    int alpha;
+
     //table of region statuses
     BeamRegion previous_regions[SCALE_SIZE];
     int previous_bend;

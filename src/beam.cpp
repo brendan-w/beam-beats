@@ -6,7 +6,8 @@
 Beam::Beam(int channel, int base_note, int color) :
     channel(channel), base_note(base_note), color(color), previous_bend(0x2000)
 {
-
+    //alpha = 0;
+    alpha = 255;
 }
 
 void Beam::draw_bg()
@@ -20,14 +21,25 @@ void Beam::draw_bg()
 
 void Beam::draw(vector<Hand> hands)
 {
+    ofPushStyle();
+    ofFill();
+
     if(hands.size() > 0)
     {
-        ofPushStyle();
-        ofFill();
-        ofSetHexColor(0xAAAAAA);
-        ofDrawRectangle(0, 0, 1, 1);
-        ofPopStyle();
+        alpha = 255;
     }
+    else
+    {
+        //dim down the beam
+        alpha -= BEAM_DECAY_RATE;
+        if(alpha < 0) //peg at zero
+            alpha = 0;
+    }
+
+    //ofSetColor(170, 170, 170, alpha);
+    ofSetColor(255, 255, 255, alpha);
+    ofDrawRectangle(0, 0, 1, 1);
+    ofPopStyle();
 }
 
 void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
