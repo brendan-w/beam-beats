@@ -26,7 +26,10 @@ void Twang::draw()
 
     //intensity fades over time
     int alpha = ofMap(frame, 0, TWANG_TIME, 255, 0);
-    float pos = cos((frame - 1) * TWANG_SPEED) / frame;
+    //homebrew easing function for the beam twang
+    //essentially a decaying cosine
+    float pos = cos((frame - 1) * TWANG_SPEED) / sqrt(frame);
+    pos = ofClamp(pos, -1.0, 1.0);
     pos *= direction;
     pos = ofMap(pos, -1, 1, 0, 1);
 
