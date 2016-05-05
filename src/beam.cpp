@@ -3,6 +3,44 @@
 #include "beam.h"
 
 
+
+Twang::Twang(int dir)
+{
+    done = false;
+    direction = dir;
+    frame = 1;
+}
+
+void Twang::draw()
+{
+    //stop animating if the twang is over
+    if(frame >= TWANG_TIME)
+    {
+        done = true;
+        return;
+    }
+
+    ofPushStyle();
+    ofFill();
+    ofSetRectMode(OF_RECTMODE_CENTER);
+
+    //intensity fades over time
+    int alpha = ofMap(frame, 0, TWANG_TIME, 255, 0);
+    float pos = cos((frame - 1) * TWANG_SPEED) / frame;
+    pos *= direction;
+    pos = ofMap(pos, -1, 1, 0, 1);
+
+    ofSetColor(255, 255, 255, alpha);
+    ofDrawRectangle(0.5, pos, 1, HAND_BEAM_WIDTH);
+
+    ofPopStyle();
+
+    frame++;
+}
+
+
+
+
 Beam::Beam(int channel, int base_note, int color) :
     channel(channel), base_note(base_note), color(color), previous_bend(0x2000)
 {
@@ -33,6 +71,23 @@ void Beam::draw(vector<Hand> hands)
 
         float y = ofMap(hand.pos.x, -1, 1, 0, 1);
         ofDrawRectangle(0.5, y, 1, HAND_BEAM_WIDTH);
+    }
+
+    //draw any running twangs
+    for(auto i = twangs.begin(); i != twangs.end();)
+    {
+        Twang& twang = *i;
+
+        //remove twangs that are done
+        if(twang.done)
+        {
+            i = twangs.erase(i);
+        }
+        else
+        {
+            twang.draw();
+            i++;
+        }
     }
 
     ofPopStyle();
@@ -85,6 +140,10 @@ void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
             //NOTE OFF
             ofLog() << "OFF " << note << " : " << vel;
             midi_out.sendNoteOff(channel, note, 64);
+
+            //start a twang
+            int direction = (previous_regions[r].hand.pos.x > 0) ? 1 : -1;
+            twangs.push_back(Twang(direction));
         }
 
         //walk the buffers

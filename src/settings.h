@@ -22,6 +22,8 @@
 #define IMAGE_FORMAT "png"
 #define HAND_BEAM_WIDTH 0.25
 #define HAND_BEAM_MIN 170
+#define TWANG_TIME 40 //frames
+#define TWANG_SPEED 0.25
 
 const int midi_velocities[] = { 32, 64, 96, 127 };
 const int midi_scale[] = { 0, 3, 5, 7, 10, 12 }; //pentatonic

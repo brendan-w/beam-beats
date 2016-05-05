@@ -7,6 +7,19 @@
 #include "hand.h"
 
 
+class Twang
+{
+public:
+    Twang(int dir); //pass 1 or -1
+    void draw();
+    bool done;
+
+private:
+    int direction;
+    int frame;
+};
+
+
 class BeamRegion
 {
 public:
@@ -31,6 +44,8 @@ private:
     //table of region statuses
     BeamRegion previous_regions[SCALE_SIZE];
     int previous_bend;
+
+    list<Twang> twangs;
 
     size_t hand_to_region(Hand& hand);
     int region_to_note(size_t region);
