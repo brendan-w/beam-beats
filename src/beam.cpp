@@ -31,8 +31,8 @@ void Beam::draw(vector<Hand> hands)
         alpha = ofClamp(alpha, 0, 255);
         ofSetColor(255, 255, 255, alpha);
 
-        float x = ofMap(hand.pos.x, 1, -1, 0, 1);
-        ofDrawRectangle(x, 0.5, 1, HAND_BEAM_WIDTH);
+        float y = ofMap(hand.pos.x, -1, 1, 0, 1);
+        ofDrawRectangle(0.5, y, 1, HAND_BEAM_WIDTH);
     }
 
     ofPopStyle();
@@ -40,10 +40,6 @@ void Beam::draw(vector<Hand> hands)
 
 void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
 {
-    //return early if there's nothing to do
-    if(hands.size() == 0)
-        return;
-
     BeamRegion regions[SCALE_SIZE];
     float max_vel = 0.0;
 
