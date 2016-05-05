@@ -44,6 +44,7 @@ private:
     //table of region statuses
     BeamRegion previous_regions[SCALE_SIZE];
     int previous_bend;
+    int previous_num_hands;
 
     list<Twang> twangs;
 

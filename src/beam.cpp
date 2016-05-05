@@ -47,7 +47,7 @@ void Twang::draw()
 Beam::Beam(int channel, int base_note, int color) :
     channel(channel), base_note(base_note), color(color), previous_bend(0x2000)
 {
-
+    previous_num_hands = 0;
 }
 
 void Beam::draw_bg()
@@ -146,12 +146,19 @@ void Beam::update(vector<Hand> hands, ofxMidiOut& midi_out)
 
             //start a twang
             int direction = (previous_regions[r].hand.pos.x > 0) ? 1 : -1;
-            twangs.push_back(Twang(direction));
+
+            //if a hand actually left the beam
+            //(not just travelled to a different note)
+            if(hands.size() < previous_num_hands)
+                twangs.push_back(Twang(direction));
         }
 
         //walk the buffers
         previous_regions[r] = regions[r];
     }
+
+    //
+    previous_num_hands = hands.size();
 }
 
 size_t Beam::hand_to_region(Hand& hand)
