@@ -6,7 +6,7 @@
 Beam::Beam(int channel, int base_note, int color) :
     channel(channel), base_note(base_note), color(color), previous_bend(0x2000)
 {
-    alpha = 0;
+
 }
 
 void Beam::draw_bg()
@@ -22,22 +22,19 @@ void Beam::draw(vector<Hand> hands)
 {
     ofPushStyle();
     ofFill();
+    ofSetRectMode(OF_RECTMODE_CENTER);
 
-    if(hands.size() > 0)
+    for(Hand& hand : hands)
     {
-        alpha = 255;
-    }
-    else
-    {
-        //dim down the beam
-        alpha -= BEAM_DECAY_RATE;
-        if(alpha < 0) //peg at zero
-            alpha = 0;
+        //intensity is based on bend value
+        int alpha = ofMap(abs(hand.vel.x), 0, 1, HAND_BEAM_MIN, 255);
+        alpha = ofClamp(alpha, 0, 255);
+        ofSetColor(255, 255, 255, alpha);
+
+        float y = ofMap(hand.pos.x, -1, 1, 0, 1);
+        ofDrawRectangle(0.5, y, 1, HAND_BEAM_WIDTH);
     }
 
-    //ofSetColor(170, 170, 170, alpha);
-    ofSetColor(255, 255, 255, alpha);
-    ofDrawRectangle(0, 0, 1, 1);
     ofPopStyle();
 }
 
