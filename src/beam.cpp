@@ -11,7 +11,7 @@ Twang::Twang(int dir)
     frame = 1;
 }
 
-void Twang::draw()
+void Twang::draw(bool invert)
 {
     //stop animating if the twang is over
     if(frame >= TWANG_TIME)
@@ -30,7 +30,8 @@ void Twang::draw()
     //essentially a decaying cosine
     float pos = cos((frame - 1) * TWANG_SPEED) / sqrt(frame);
     pos = ofClamp(pos, -1.0, 1.0);
-    pos *= direction;
+    pos *= direction; //the direction that the hand exitted from
+    pos *= (invert ? -1 : 1);
     pos = ofMap(pos, -1, 1, 0, 1);
 
     ofSetColor(255, 255, 255, alpha);
@@ -44,9 +45,10 @@ void Twang::draw()
 
 
 
-Beam::Beam(int channel, int base_note, int color) :
-    channel(channel), base_note(base_note), color(color), previous_bend(0x2000)
+Beam::Beam(int channel, int base_note, int color, bool invert) :
+    channel(channel), base_note(base_note), color(color), invert(invert)
 {
+    previous_bend = 0x2000;
     previous_num_hands = 0;
 }
 
@@ -72,7 +74,8 @@ void Beam::draw(vector<Hand> hands)
         alpha = ofClamp(alpha, 0, 255);
         ofSetColor(255, 255, 255, alpha);
 
-        float y = ofMap(hand.pos.x, -1, 1, 0, 1);
+        float y = hand.pos.x * (invert ? -1 : 1);
+        y = ofMap(y, -1, 1, 0, 1);
         ofDrawRectangle(0.5, y, 1, HAND_BEAM_WIDTH);
     }
 
@@ -88,7 +91,7 @@ void Beam::draw(vector<Hand> hands)
         }
         else
         {
-            twang.draw();
+            twang.draw(invert);
             i++;
         }
     }

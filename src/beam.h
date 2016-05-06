@@ -11,7 +11,7 @@ class Twang
 {
 public:
     Twang(int dir); //pass 1 or -1
-    void draw();
+    void draw(bool invert);
     bool done;
 
 private:
@@ -31,7 +31,7 @@ public:
 class Beam
 {
 public:
-    Beam(int channel, int base_note, int color);
+    Beam(int channel, int base_note, int color, bool invert);
     void update(vector<Hand> hands, ofxMidiOut& midi_out);
     void draw_bg();
     void draw(vector<Hand> hands);
@@ -40,6 +40,7 @@ private:
     const int channel;
     const int base_note;
     const int color;
+    const bool invert;
 
     //table of region statuses
     BeamRegion previous_regions[SCALE_SIZE];

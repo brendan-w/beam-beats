@@ -27,10 +27,10 @@ void ofApp::setup()
     //=====================================
 
     //construct our 4 beams (channel, base note, color)
-    beams.push_back(Beam(1, 28, 0x9a278b)); //purple
-    beams.push_back(Beam(2, 40, 0xeb273c)); //red
-    beams.push_back(Beam(3, 52, 0x07abd5)); //blue
-    beams.push_back(Beam(4, 64, 0xfab216)); //orange
+    beams.push_back(Beam(1, 28, 0x9a278b, false)); //purple
+    beams.push_back(Beam(2, 40, 0xeb273c, true )); //red
+    beams.push_back(Beam(3, 52, 0x07abd5, false)); //blue
+    beams.push_back(Beam(4, 64, 0xfab216, true )); //orange
 
     cameras.push_back(new BeamCamera(0, "left"));
     cameras.push_back(new BeamCamera(1, "right"));
