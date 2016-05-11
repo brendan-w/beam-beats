@@ -10,14 +10,19 @@
 #define HAND_MAX_VY 0.05
 
 
+/*
+ * Class that represents a hand in a beam. Contains the original ofxCvBlob
+ * from the BeamCameras, and computes velocities.
+ */
+
 class Hand
 {
 public:
     ofPoint pos; //beam-normalized position
-    ofPoint vel;
-    ofPoint intersection; //perpedicular intersection with the center of the beam
-    ofxCvBlob blob;
-    float area_vel;
+    ofPoint vel; //beam-normalized velocity
+    ofPoint intersection; //perpedicular intersection with the center of the beam in pixels coordinates
+    ofxCvBlob blob; //the original ofxCvBlob that this hand was generated from.
+    float area_vel; //the rate of change in the beam-exposed area of the hand. (experimental tool for computing velocity)
 
     Hand() { };
     Hand(ofPoint _pos, ofPoint _intersection, ofxCvBlob _blob)
@@ -27,6 +32,8 @@ public:
         blob = _blob;
     };
 
+    //computes this hand's velocity based on the position of the same
+    //hand from the previous frame
     void compute_velocity(Hand& old_hand)
     {
         vel = old_hand.pos - pos;

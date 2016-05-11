@@ -5,9 +5,23 @@
 #include "settings.h"
 #include "hand.h"
 
+/*
+ * Class for storing and computing the details of a single beam of light.
+ *
+ * Beams are learned by creating beam-masks. These masks not only prevent
+ * outside light sources from interfering, but are used to determine the
+ * beam-relative position of a hand. Beam masks are blob detected, and a
+ * minimum-area rectangle is fitted. The major axis of this rectangle is
+ * assumed to be the axis of the beam. The blob_to_hand() function performs
+ * these computations, and returns a hand with normalized, beam-local
+ * coordinates.
+ *
+ * This class is completely computed from the beam mask, and can be recreated
+ * by loading a mask image from disk.
+ */
+
 class BeamDescriptor
 {
-//this class is completely computed from the beam mask
 public:
     BeamDescriptor();
     BeamDescriptor(ofImage& image);

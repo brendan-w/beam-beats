@@ -7,6 +7,15 @@
 #define NOT_LEARNING -1
 
 
+/*
+ * Class that wraps an ofVideograbber with tools for learning
+ * and reporting beams of light and hands.
+ *
+ * Holds a sparse table of BeamDescriptors for beam-specific data
+ * and processing. This class is also responsible for performing
+ * all thresholding, background subtraction, and hand/blob detection.
+ * Each BeamCamera stores its learned data in its `cam_name` directory.
+ */
 
 class BeamCamera
 {
