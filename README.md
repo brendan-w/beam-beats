@@ -32,7 +32,7 @@ Beam Beats is a musical instrument that is controlled by placing your hands in b
 Building & Running
 ------------------
 
-Beam Beats is an [OpenFrameworks](http://openframeworks.cc/) application developed on Fedora Linux.
+Beam Beats is an [OpenFrameworks](http://openframeworks.cc/) application developed to run on Fedora Linux.
 
 - Install and compile OpenFrameworks
 - Install dependent OpenFrameworks addons
@@ -42,7 +42,7 @@ Beam Beats is an [OpenFrameworks](http://openframeworks.cc/) application develop
 - Run `make` to build `bin/beam-beats`
 - Plug in a USB MIDI adapter
 - Plug in the USB PS3 Eye cameras
-- unload the default Linux video driver with `sudo modprobe -r gspca_ov534`. OR, a better solution is to blacklist the module entirely with `echo "blacklist gspca_ov534" >> /etc/modprobe.d/blacklist-ps3eye.conf`
+- Unload the default Linux camera driver with `sudo modprobe -r gspca_ov534`. OR, a better solution is to blacklist the module entirely with `echo "blacklist gspca_ov534" >> /etc/modprobe.d/blacklist-ps3eye.conf`
 - Run `./bin/beam-beats` as root (libusb needs priveleges to access your USB)
 - Resize the application to cover all of your attached screens/projectors
 
@@ -68,8 +68,12 @@ Once cameras are mounted, you can begin training with your beams. Launch the app
 Instrument Controls
 -------------------
 
+Once running properly, your beams should respond to the following:
+
 - vertical position (hand height): pitch across a fixed pentatonic scale of 6 notes
 - horizontal velocity (hand shake): vibrato
+
+`bin/beam-beats` will print note ON/OFF data to your terminal. If you wish to preview the raw MIDI data (that includes pitch bend information), it is helpful run [MIDIOX](http://www.midiox.com/) on a windows computer.
 
 Key Bindings
 ------------
