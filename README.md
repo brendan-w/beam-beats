@@ -59,11 +59,12 @@ First, setup you cameras such that they can view the entirety of their respectiv
 Once cameras are mounted, you can begin training with your beams. Launch the application, resize it to cover all of your projectors, and press `TAB` to enter running mode. This will project light for each of your defined beams. Make sure that no objects are in any of the beams, and capture a background frame by pressing `SPACE`. This background frame will help ignore ambient room light and fog effects. To "train" a beam is actually to construct a black white mask of the beams location in the camera's view. To train a single beam:
 
 - Press the number key (`1-9`) for the beam you want to train. This will erase the previous training data, and will begin watching for an object in the beam.
-- Slowly pass a large, flat object through the length of the beam. Direction does not matter. You are essentially painting the beams location (as a mask).
+- Slowly pass a large, flat object through the length of the beam. Direction does not matter. You are essentially painting the beams location in the camera's view (as a mask).
 - Press `ENTER` when done, and the new beam mask will be written to disk in each camera's data/ folder.
 - Press `TAB` to switch back to status mode. Camera's are listed in rows. The live feed is shown on the left, and the trained masks are collectively shown on the right. Take a look at the mask that you just trained, and gut-check it. If the mask appears too lean, or if it is missing sections, you may need to lower the brightness threshold of object detection (this can be done with the `UP/DOWN` keys). Conversely, if the mask is billowing wider than the actual beam, you may need to increase this threshold.
 - Press `TAB` again to go back into running mode, and repeat for each of your beams, as many times as you need.
 
+If you wish to edit these masks rather than recapturing them, they are simply numbered `.png`s in the app's data/ directory. You may use any photo editor to paint/fix these masks. When done, simply restart the application to reload them.
 
 Instrument Controls
 -------------------
