@@ -66,6 +66,8 @@ Once cameras are mounted, you can begin training with your beams. Launch the app
 
 If you wish to edit these masks rather than recapturing them, they are simply numbered `.png`s in the app's data/ directory. You may use any photo editor to paint/fix these masks. When done, simply restart the application to reload them.
 
+Besides adjusting the threshold, the PS3 Eye cameras also have onboard exposure control. This can be adjusted with the `LEFT/RIGHT` keys. By default the exposure is set extremely low to help ignore fog effects. While normal theatrical haze doesn't usually pose a problem, other effects such as dry-ice can produce clouds that may be mistaken as hands. If the instrument begins "playing itself" with fog, the usual tactic is to lower the exposure slightly, and re-capture a background frame.
+
 Instrument Controls
 -------------------
 
