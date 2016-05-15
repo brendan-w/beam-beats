@@ -43,7 +43,7 @@ Beam Beats is an [OpenFrameworks](http://openframeworks.cc/) application develop
 - Plug in a USB MIDI adapter
 - Plug in the USB PS3 Eye cameras
 - Unload the default Linux camera driver with `sudo modprobe -r gspca_ov534`. OR, a better solution is to blacklist the module entirely with `echo "blacklist gspca_ov534" >> /etc/modprobe.d/blacklist-ps3eye.conf`
-- Run `./bin/beam-beats` as root (libusb needs priveleges to access your USB)
+- Run `./bin/beam-beats` as root (libusb needs privileges to access your USB)
 - Resize the application to cover all of your attached screens/projectors
 
 
@@ -52,9 +52,9 @@ Usage & Training
 
 In order for the computer to know where each beam of light is in the cameras view, it must be taught. Beam beats is built to learn multiple vertical beams, and to perform bright object hand-detection in those beams. Beams may be viewed by different cameras.
 
-Beam Beats is currently setup to handle 2 PS3 Eye cameras and 4 beams. If you wish to change this, do so now, by editting [ofApp.cpp here](https://github.com/brendan-w/beam-beats/blob/master/src/ofApp.cpp#L30-L36) (I apologize, I didn't have time to implement a config file system).
+Beam Beats is currently setup to handle 2 PS3 Eye cameras and 4 beams. If you wish to change this, do so now, by editing [ofApp.cpp here](https://github.com/brendan-w/beam-beats/blob/master/src/ofApp.cpp#L30-L36) (I apologize, I didn't have time to implement a config file system).
 
-First, setup you cameras such that they can view the entirety of their respective beams. The cameras must be able to see the lit side of a users hand. While the application can tolerate most camera angles, it currently performs no perspective correction, so care must be taken to *not* place the cameras at unreasonbly severe angles. Our setup used cameras tilted at 45° relative to the beams with tolerable perspective distortion.
+First, setup you cameras such that they can view the entirety of their respective beams. The cameras must be able to see the lit side of a users hand. While the application can tolerate most camera angles, it currently performs no perspective correction, so care must be taken to *not* place the cameras at unreasonably severe angles. Our setup used cameras tilted at 45° relative to the beams with tolerable perspective distortion.
 
 Once cameras are mounted, you can begin training with your beams. Launch the application, resize it to cover all of your projectors, and press `TAB` to enter running mode. This will project light for each of your defined beams. Make sure that no objects are in any of the beams, and capture a background frame by pressing `SPACE`. This background frame will help ignore ambient room light and fog effects. To "train" a beam is actually to construct a black & white mask of the beams location in the camera's view. To train a single beam:
 
@@ -66,7 +66,7 @@ Once cameras are mounted, you can begin training with your beams. Launch the app
 
 If you wish to edit these masks rather than recapturing them, they are simply numbered `.png`s in the app's data/ directory. You may use any photo editor to paint/fix these masks. When done, simply restart the application to reload them.
 
-Besides adjusting the threshold, the PS3 Eye cameras also have onboard exposure control. This can be adjusted with the `LEFT/RIGHT` keys. By default the exposure is set extremely low to help ignore fog effects. While normal theatrical haze doesn't usually pose a problem, other effects such as dry-ice can produce clouds that may be mistaken as hands. If the instrument begins "playing itself" with fog, the usual tactic is to lower the exposure slightly, and re-capture a background frame.
+Besides adjusting the threshold, the PS3 Eye cameras also have on-board exposure control. This can be adjusted with the `LEFT/RIGHT` keys. By default the exposure is set extremely low to help ignore fog effects. While normal theatrical haze doesn't usually pose a problem, other effects such as dry-ice can produce clouds that may be mistaken as hands. If the instrument begins "playing itself" with fog, the usual tactic is to lower the exposure slightly, and re-capture a background frame.
 
 Instrument Controls
 -------------------
